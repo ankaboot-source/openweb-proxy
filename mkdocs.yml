@@ -1,0 +1,54 @@
+site_name: the-web-open-again
+repo_url: https://github.com/ankaboot-source/the-web-open-again
+site_url: https://ankaboot-source.github.io/the-web-open-again
+site_description: Making the Web Open Again
+site_author: Ankaboot
+edit_uri: edit/main/docs/
+repo_name: ankaboot-source/the-web-open-again
+copyright: Maintained by <a href="https://ankaboot-source.com">Florian</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+            setup_commands:
+                - import sys
+                - sys.path.append('../')
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ankaboot-source/the-web-open-again
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/the-web-open-again
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
