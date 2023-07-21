@@ -1,6 +1,7 @@
 #!/bin/env python3
 # Copyright 2022 Badreddine LEJMI.
 # SPDX-License-Identifier: AGPL-3.0-or-later
+import argparse
 import random
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -277,19 +278,32 @@ class ProxyMiner:
         self.clean()
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Proxy Miner - Mine and verify proxies from the web.")
+    parser.add_argument(
+        "proxies_file",
+        nargs="?",
+        default=PROXIES_FILE,
+        help="The file to load/save the proxies. Default is 'proxies.txt'.",
+    )
+    parser.add_argument(
+        "--web",
+        action="store_true",
+        help="Load proxies from the web if the specified file is empty or not provided.",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     log.remove(0)
     log.add(sys.stderr, level="INFO")
 
-    pm = ProxyMiner()
-    if len(sys.argv) > 1:
-        proxies_file = sys.argv[1]
-        pm.load(proxies_file)
-    else:
-        proxies_file = PROXIES_FILE
-        pm.get()
-        pm.verify()
+    args = parse_arguments()
+    proxies_file = args.proxies_file
 
+    pm = ProxyMiner()
+    pm.load(proxies_file, args.web)
+    pm.verify()
     pm.clean()
     log.debug(f"🪲 Proxies: {pm.proxies}")
 
