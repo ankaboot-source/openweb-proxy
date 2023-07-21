@@ -97,7 +97,7 @@ class ProxyMiner:
             proxy = row.find_all("td")
             ip = proxy[0].string
             port = proxy[1].string
-            self.proxies.update(f"https://{ip}:{port}")
+            self.proxies.add(f"https://{ip}:{port}")
         log.debug(f"🪲 Proxies sslproxies number: {len(self.proxies)}")
 
     def _get_clarketm(self):
@@ -107,7 +107,7 @@ class ProxyMiner:
         )
         for proxy_l in r.text.splitlines()[6:-2]:
             if "S" in proxy_l:
-                self.proxies.update("https://%s" % proxy_l.split(" ")[0])
+                self.proxies.add("https://%s" % proxy_l.split(" ")[0])
         log.debug(f"🪲 Proxies clarketm number: {len(self.proxies)}")
 
     def _get_proxies(self, url: str):
@@ -173,7 +173,7 @@ class ProxyMiner:
             future_proxies = {executor.submit(self._clean_proxy, proxy): proxy for proxy in self.proxies}
             for proxy in as_completed(future_proxies):
                 if proxy.result():
-                    proxies_clean.update(future_proxies[proxy])
+                    proxies_clean.add(future_proxies[proxy])
                 continue
         self.proxies = proxies_clean
 
