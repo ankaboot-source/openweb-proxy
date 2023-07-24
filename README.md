@@ -1,15 +1,15 @@
-# the-web-open-again
+# openweb-proxy
 
-[![Release](https://img.shields.io/github/v/release/ankaboot-source/the-web-open-again)](https://img.shields.io/github/v/release/ankaboot-source/the-web-open-again)
-[![Build status](https://img.shields.io/github/actions/workflow/status/ankaboot-source/the-web-open-again/main.yml?branch=main)](https://github.com/ankaboot-source/the-web-open-again/actions/workflows/main.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/ankaboot-source/the-web-open-again/branch/main/graph/badge.svg)](https://codecov.io/gh/ankaboot-source/the-web-open-again)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/ankaboot-source/the-web-open-again)](https://img.shields.io/github/commit-activity/m/ankaboot-source/the-web-open-again)
-[![License](https://img.shields.io/github/license/ankaboot-source/the-web-open-again)](https://img.shields.io/github/license/ankaboot-source/the-web-open-again)
+[![Release](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)
+[![Build status](https://img.shields.io/github/actions/workflow/status/ankaboot-source/openweb-proxy/main.yml?branch=main)](https://github.com/ankaboot-source/openweb-proxy/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/ankaboot-source/openweb-proxy/branch/main/graph/badge.svg)](https://codecov.io/gh/ankaboot-source/openweb-proxy)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)
+[![License](https://img.shields.io/github/license/ankaboot-source/openweb-proxy)](https://img.shields.io/github/license/ankaboot-source/openweb-proxy)
 
 Making the Web Open Again
 
-- **Github repository**: <https://github.com/ankaboot-source/the-web-open-again/>
-- **Documentation** <https://ankaboot-source.github.io/the-web-open-again/>
+- **Github repository**: <https://github.com/ankaboot-source/openweb-proxy/>
+- **Documentation** <https://ankaboot-source.github.io/openweb-proxy/>
 
 ## Getting started with your project
 
@@ -19,7 +19,7 @@ First, create a repository on GitHub with the same name as this project, and the
 git init -b main
 git add .
 git commit -m "init commit"
-git remote add origin git@github.com:ankaboot-source/the-web-open-again.git
+git remote add origin git@github.com:ankaboot-source/openweb-proxy.git
 git push -u origin main
 ```
 
@@ -43,8 +43,8 @@ To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookie
 
 - Create an API Token on [Pypi](https://pypi.org/).
 - Add the API Token to your projects secrets with the name `PYPI_TOKEN` by visiting 
-[this page](https://github.com/ankaboot-source/the-web-open-again/settings/secrets/actions/new).
-- Create a [new release](https://github.com/ankaboot-source/the-web-open-again/releases/new) on Github. 
+[this page](https://github.com/ankaboot-source/openweb-proxy/settings/secrets/actions/new).
+- Create a [new release](https://github.com/ankaboot-source/openweb-proxy/releases/new) on Github. 
 Create a new tag in the form ``*.*.*``.
 
 For more details, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/cicd/#how-to-trigger-a-release).

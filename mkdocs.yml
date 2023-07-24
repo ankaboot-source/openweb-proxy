@@ -1,10 +1,10 @@
-site_name: the-web-open-again
-repo_url: https://github.com/ankaboot-source/the-web-open-again
-site_url: https://ankaboot-source.github.io/the-web-open-again
+site_name: openweb-proxy
+repo_url: https://github.com/ankaboot-source/openweb-proxy
+site_url: https://ankaboot-source.github.io/openweb-proxy
 site_description: Making the Web Open Again
 site_author: Ankaboot
 edit_uri: edit/main/docs/
-repo_name: ankaboot-source/the-web-open-again
+repo_name: ankaboot-source/openweb-proxy
 copyright: Maintained by <a href="https://ankaboot-source.com">Florian</a>.
 
 nav:
@@ -43,9 +43,9 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ankaboot-source/the-web-open-again
+      link: https://github.com/ankaboot-source/openweb-proxy
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/the-web-open-again
+      link: https://pypi.org/project/openweb-proxy
 
 markdown_extensions:
   - toc:

@@ -16,6 +16,6 @@ COPY poetry.lock pyproject.toml /code/
 RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 
 # Copy Python code to the Docker image
-COPY the_web_open_again /code/the_web_open_again/
+COPY openweb_proxy /code/openweb_proxy/
 
-CMD [ "python", "the_web_open_again/foo.py"]
+CMD [ "python", "openweb_proxy/foo.py"]

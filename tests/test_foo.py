@@ -1,4 +1,4 @@
-from the_web_open_again.foo import foo
+from openweb_proxy.foo import foo
 
 
 def test_foo():
