@@ -2,6 +2,7 @@
 # Copyright 2022 Badreddine LEJMI.
 # SPDX-License-Identifier: AGPL-3.0-or-later
 import argparse
+import os
 import random
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -254,8 +255,11 @@ class ProxyMiner:
 
         Args:
             filename (str, optional): filename. Defaults to PROXIES_FILE.
-            web (bool, optional): loads from Web as fallback. Defaults to True.
+            web (bool, optional): loads from Web as fallback. Defaults to True (forced if file doesn't exist).
         """
+        if not os.path.exists(filename):
+            with open(filename, "w"):
+                web = True
         with open(filename, "r+") as p:
             proxies = p.read().splitlines()
             if proxies:
