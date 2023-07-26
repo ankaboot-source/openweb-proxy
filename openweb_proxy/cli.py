@@ -4,6 +4,7 @@
 import argparse
 import os
 import random
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
@@ -86,6 +87,13 @@ class ProxyMiner:
         self.timeout = timeout
         self.sources = sources
         self.checker = checker
+        self.regex = re.compile(
+            r"(?:^|\D)(({0}\.{1}\.{1}\.{1}):{2})(?:\D|$)".format(
+                r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 1-255
+                r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 0-255
+                r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}" + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
+            )
+        )
         self.proxies = set()
 
         self.sources["https"].extend(
@@ -120,7 +128,7 @@ class ProxyMiner:
     def _get_proxies(self, url: str):
         """Get proxies list from github and al"""
         r = requests.get(url, timeout=self.timeout)
-        self.proxies.update({f"{self.protocol}://{proxy}" for proxy in r.text.splitlines()})
+        self.proxies.update({f"{self.protocol}://{proxy}" for proxy in self.regex.finditer(r.text)})
         log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
 
     def get(self) -> list[str]:
