@@ -90,8 +90,8 @@ class ProxyMiner:
 
         self.sources["https"].extend(
             [
-                self._get_sslproxies,
-                self._get_clarketm,
+                # self._get_sslproxies(),
+                self._get_clarketm(),
             ]
         )
 
