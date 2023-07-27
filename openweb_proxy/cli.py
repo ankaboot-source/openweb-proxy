@@ -249,7 +249,7 @@ class ProxyMiner:
                 log.info(
                     f"Batch testing. Chunk: {chunk_i}/{len(chunks)}. Sleep: {r.headers['X-Ttl']}s before next chunk"
                 )
-                sleep(int(r.headers["X-Ttl"]))
+                sleep(int(r.headers["X-Ttl"]) + 5)
 
             results = r.json()
             self.proxies.update(
