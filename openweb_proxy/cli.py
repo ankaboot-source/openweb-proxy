@@ -48,6 +48,7 @@ PROXY_SOURCES = {
         "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies_anonymous/socks5.txt",
         "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5",
+        "https://openproxy.space/list/socks5",
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt",
         "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks5.txt",
         "https://raw.githubusercontent.com/B4RC0DE-TM/proxy-list/main/SOCKS5.txt",
