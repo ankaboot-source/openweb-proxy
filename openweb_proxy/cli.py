@@ -127,9 +127,14 @@ class ProxyMiner:
 
     def _get_proxies(self, url: str):
         """Get proxies list from github and al"""
-        r = requests.get(url, timeout=self.timeout)
-        self.proxies.update({f"{self.protocol}://{proxy.group(1)}" for proxy in self.regex.finditer(r.text)})
-        log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
+        try:
+            r = requests.get(url, timeout=self.timeout)
+            self.proxies.update({f"{self.protocol}://{proxy.group(1)}" for proxy in self.regex.finditer(r.text)})
+            log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
+        except requests.exceptions.ReadTimeout:
+            log.error(f"❌ Source {url} timed out")
+        except requests.exceptions.ConnectionError:
+            log.error(f"❌ Connection to source {url} failed")
 
     def get(self) -> list[str]:
         """Get proxies from public sources
