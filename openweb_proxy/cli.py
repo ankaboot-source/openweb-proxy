@@ -272,13 +272,12 @@ class ProxyMiner:
             filename (str, optional): filename. Defaults to PROXIES_FILE.
             web (bool, optional): loads from Web as fallback. Defaults to True (forced if file doesn't exist).
         """
-        if not os.path.exists(filename):
+        if web:
+            log.warning("Will load from Web")
+            self.get()
+        elif not os.path.exists(filename):
             log.warning(f"File {filename} not found")
-            if web:
-                log.warning("Will load from Web")
-                self.get()
-            else:
-                log.warning("Nothing to do, please add `--web` to pull from web")
+            log.warning("Nothing to do, please add `--web` to pull from web")
             return
         with open(filename, "r+") as p:
             proxies = p.read().splitlines()
