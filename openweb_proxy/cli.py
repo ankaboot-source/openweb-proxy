@@ -308,6 +308,21 @@ class ProxyMiner:
         self.verify()
         self.clean()
 
+    def benchmark_sources(self):
+        sources = {source: 0 for source in self.sources[self.protocol]}
+        log.warning("Benchmarking sources, nothing will be written to file")
+        for source in sources:
+            self.sources[self.protocol] = [source]
+            self.get()
+            self.verify()
+            self.clean()
+            sources[source] = len(self.proxies)
+        for source in sources:
+            if sources[source]:
+                log.info(f"👍 Source {source} contains {sources[source]} valid proxies")
+            else:
+                log.info(f"👎 Source {source} has no valid proxies")
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Proxy Miner - Mine and verify proxies from the web.")
@@ -322,6 +337,11 @@ def parse_arguments():
         action="store_true",
         help="Load proxies from the web if the specified file is empty or not provided.",
     )
+    parser.add_argument(
+        "--bench",
+        action="store_true",
+        help="Benchmark web sources for proxies, this option doesn't write to file",
+    )
     return parser.parse_args()
 
 
@@ -333,6 +353,9 @@ if __name__ == "__main__":
     proxies_file = args.proxies_file
 
     pm = ProxyMiner()
+    if args.bench:
+        pm.benchmark_sources()
+        sys.exit()
     pm.load(proxies_file, args.web)
     pm.verify()
     pm.clean()
