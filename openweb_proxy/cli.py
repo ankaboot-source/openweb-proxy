@@ -8,6 +8,7 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
+from typing import Dict, List, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -60,7 +61,7 @@ PROXY_SOURCES = {
 }
 
 
-def random_ua_headers():
+def random_ua_headers() -> Dict[str, str]:
     """
     generate a random user-agent
     most basic technique against bot blockers
@@ -74,15 +75,15 @@ class ProxyMiner:
     Mine proxies from the Web:
     - load them from public sources on the Web
     - check and keep proxies undetected as proxy
-    - verify and keep only working proxie
+    - verify and keep only working proxies
     """
 
     def __init__(
         self,
         protocol: str = PROXY_PROTOCOL,
         timeout: int = TIMEOUT,
-        sources: dict = PROXY_SOURCES,
-        checker: str = CHECK_URL,
+        sources: Dict[str, List[Union[str, callable]]] = PROXY_SOURCES,
+        checker: Dict[str, str] = CHECK_URL,
     ):
         self.protocol = protocol
         self.timeout = timeout
@@ -137,7 +138,7 @@ class ProxyMiner:
         except requests.exceptions.ConnectionError:
             log.error(f"❌ Connection to source {url} failed")
 
-    def get(self) -> list[str]:
+    def get(self) -> List[str]:
         """Get proxies from public sources
 
         Args:
@@ -156,7 +157,7 @@ class ProxyMiner:
         log.info(f"Proxies number (raw): {len(self.proxies)}")
         return list(self.proxies)
 
-    def _clean_proxy(self, proxy):
+    def _clean_proxy(self, proxy: str) -> Union[str, bool]:
         """Check if a proxy URL is working"""
         log.debug(f"🪲 Testing proxy: {proxy}")
         try:
@@ -188,7 +189,7 @@ class ProxyMiner:
 
         return proxy
 
-    def clean(self, max_workers=MAX_CHECK_WORKERS):
+    def clean(self, max_workers: int = MAX_CHECK_WORKERS):
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
@@ -201,7 +202,7 @@ class ProxyMiner:
                 continue
         self.proxies = proxies_clean
 
-    def is_proxy(self, ip, check_url=ISPROXY_URL):
+    def is_proxy(self, ip: str, check_url: str = ISPROXY_URL) -> Union[bool, None]:
         log.info(f"i Testing {ip}")
         try:
             r = requests.get(check_url.format(ip=ip), timeout=self.timeout)
@@ -300,7 +301,7 @@ class ProxyMiner:
             with open(filename, "w") as f:
                 return f.write("\n".join(self.proxies))
 
-    def random(self):
+    def random(self) -> Dict[str, str]:
         return {self.protocol: random.choice(list(self.proxies))}
 
     def refresh(self):
