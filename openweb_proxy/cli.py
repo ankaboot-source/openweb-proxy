@@ -274,7 +274,7 @@ class ProxyMiner:
         """
         if web:
             log.warning("Will load from Web")
-            self.get()
+            return self.get()
         elif not os.path.exists(filename):
             log.warning(f"File {filename} not found")
             log.warning("Nothing to do, please add `--web` to pull from web")
@@ -286,7 +286,7 @@ class ProxyMiner:
                 self.proxies.update(proxies)
             elif web:
                 log.warning(f"No proxies found in {filename}. Will load from Web")
-                self.get()
+                return self.get()
             else:
                 log.warning(f"No proxies found in {filename}")
 
