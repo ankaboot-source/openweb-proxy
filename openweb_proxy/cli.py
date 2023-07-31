@@ -8,7 +8,7 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
-from typing import Dict, List, Union
+from typing import Any, Callable, Dict, List, Set, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -32,7 +32,7 @@ DEFAULT_PROXY = "https://localhost:3128"
 TIMEOUT = 5
 MAX_WORKERS = 10
 
-PROXY_SOURCES = {
+PROXY_SOURCES: Dict[str, List[Union[str, Callable[[], Any]]]] = {
     "https": [
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/https.txt",
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",
@@ -82,7 +82,7 @@ class ProxyMiner:
         self,
         protocol: str = PROXY_PROTOCOL,
         timeout: int = TIMEOUT,
-        sources: Dict[str, List[Union[str, callable]]] = PROXY_SOURCES,
+        sources: Dict[str, List[Union[str, Callable[[], Any]]]] = PROXY_SOURCES,
         checker: Dict[str, str] = CHECK_URL,
     ):
         self.protocol = protocol
@@ -96,7 +96,7 @@ class ProxyMiner:
                 r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}" + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
             )
         )
-        self.proxies = set()
+        self.proxies: Set[str] = set()
 
         self.sources["https"].extend(
             [
@@ -105,7 +105,7 @@ class ProxyMiner:
             ]
         )
 
-    def _get_sslproxies(self):
+    def _get_sslproxies(self) -> None:
         """Get HTTPS proxies from sslproxies.org"""
         r = requests.get("https://www.sslproxies.org/", random_ua_headers(), timeout=self.timeout)
         soup = BeautifulSoup(r.text, "html.parser")
@@ -117,7 +117,7 @@ class ProxyMiner:
             self.proxies.add(f"https://{ip}:{port}")
         log.debug(f"🪲 Proxies sslproxies number: {len(self.proxies)}")
 
-    def _get_clarketm(self):
+    def _get_clarketm(self) -> None:
         """Get HTTPS proxies from clarketm on github"""
         r = requests.get(
             "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt", timeout=self.timeout
@@ -127,7 +127,7 @@ class ProxyMiner:
                 self.proxies.add("https://%s" % proxy_l.split(" ")[0])
         log.debug(f"🪲 Proxies clarketm number: {len(self.proxies)}")
 
-    def _get_proxies(self, url: str):
+    def _get_proxies(self, url: str) -> None:
         """Get proxies list from github and al"""
         try:
             r = requests.get(url, timeout=self.timeout)
@@ -150,10 +150,10 @@ class ProxyMiner:
             list[str]: list of URL proxies
         """
         for proxy_getter in self.sources[self.protocol]:
-            if type(proxy_getter) == str:
-                self._get_proxies(proxy_getter)
-            else:
+            if callable(proxy_getter):
                 proxy_getter()
+            else:
+                self._get_proxies(proxy_getter)
         log.info(f"Proxies number (raw): {len(self.proxies)}")
         return list(self.proxies)
 
@@ -189,7 +189,7 @@ class ProxyMiner:
 
         return proxy
 
-    def clean(self, max_workers: int = MAX_CHECK_WORKERS):
+    def clean(self, max_workers: int = MAX_CHECK_WORKERS) -> None:
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
@@ -209,12 +209,12 @@ class ProxyMiner:
         except requests.RequestException:
             return None
 
-        r = r.json()
+        resp = r.json()
 
-        if r["status"] != "success":
+        if resp["status"] != "success":
             log.warning(f"Failed to check: {ip}")
             return None
-        if r["proxy"]:
+        if resp["proxy"]:
             log.info(f"Proxy detected: {ip}")
             return True
         return False
@@ -240,11 +240,11 @@ class ProxyMiner:
                 r = requests.post(url, data=str(chunk).replace("'", '"'), timeout=self.timeout)
             except requests.RequestException as e:
                 log.error(f"Batch testing. Request Error: {e}")
-                return None
+                return False
 
             if not r.ok:
                 log.error(f"Batch testing. HTTP Error: {r.text}")
-                return None
+                return False
 
             log.debug("🪲 Still {} requests in {} seconds".format(r.headers["X-Rl"], r.headers["X-Ttl"]))
             if int(r.headers["X-Rl"]) == 0:
@@ -265,7 +265,7 @@ class ProxyMiner:
 
         return True
 
-    def load(self, filename: str = PROXIES_FILE, web: bool = True):
+    def load(self, filename: str = PROXIES_FILE, web: bool = True) -> List[str]:
         """Load set of proxies from file or web if file is empty
 
         Args:
@@ -278,19 +278,21 @@ class ProxyMiner:
         elif not os.path.exists(filename):
             log.warning(f"File {filename} not found")
             log.warning("Nothing to do, please add `--web` to pull from web")
-            return
+            return []
         with open(filename, "r+") as p:
             proxies = p.read().splitlines()
             if proxies:
                 log.info(f"✅ {len(proxies)} proxies loaded from {filename}")
                 self.proxies.update(proxies)
+                return list(self.proxies)
             elif web:
                 log.warning(f"No proxies found in {filename}. Will load from Web")
                 return self.get()
             else:
                 log.warning(f"No proxies found in {filename}")
+                return []
 
-    def save(self, filename: str = PROXIES_FILE):
+    def save(self, filename: str = PROXIES_FILE) -> int:
         """Save list of proxies into file
 
         Args:
@@ -299,16 +301,17 @@ class ProxyMiner:
         if self.proxies:
             with open(filename, "w") as f:
                 return f.write("\n".join(self.proxies))
+        return -1
 
     def random(self) -> Dict[str, str]:
         return {self.protocol: random.choice(list(self.proxies))}
 
-    def refresh(self):
+    def refresh(self) -> None:
         self.load()
         self.verify()
         self.clean()
 
-    def benchmark_sources(self):
+    def benchmark_sources(self) -> None:
         sources = {source: 0 for source in self.sources[self.protocol]}
         log.warning("Benchmarking sources, nothing will be written to file")
         for source in sources:
@@ -324,7 +327,7 @@ class ProxyMiner:
                 log.info(f"👎 Source {source} has no valid proxies")
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Proxy Miner - Mine and verify proxies from the web.")
     parser.add_argument(
         "proxies_file",
@@ -345,7 +348,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     log.remove(0)
     log.add(sys.stderr, level="INFO")
 
