@@ -18,4 +18,4 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 # Copy Python code to the Docker image
 COPY openweb_proxy /code/openweb_proxy/
 
-CMD [ "python", "openweb_proxy/foo.py"]
+CMD [ "python", "-m", "openweb_proxy"]
