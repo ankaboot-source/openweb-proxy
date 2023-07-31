@@ -345,7 +345,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     log.remove(0)
     log.add(sys.stderr, level="INFO")
 
@@ -366,3 +366,7 @@ if __name__ == "__main__":
 
     pm.save(proxies_file)
     log.info(f"Random proxy: {pm.random()}")
+
+
+if __name__ == "__main__":
+    main()
