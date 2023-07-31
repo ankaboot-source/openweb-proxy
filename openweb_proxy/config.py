@@ -17,6 +17,8 @@ DEFAULT_PROXY = "https://localhost:3128"
 TIMEOUT = 5
 MAX_WORKERS = 10
 
+BANNED_URL = "https://raw.githubusercontent.com/ankaboot-source/email-open-data/main/mailserver-banned-ips.txt"
+
 PROXY_SOURCES: Dict[str, List[Union[str, Callable[[], Any]]]] = {
     "https": [
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/https.txt",

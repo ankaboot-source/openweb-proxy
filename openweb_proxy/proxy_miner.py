@@ -137,6 +137,7 @@ class ProxyMiner:
         return proxy
 
     def clean(self, max_workers: int = config.MAX_CHECK_WORKERS) -> None:
+        mail_banned_ips = requests.get(config.BANNED_URL, timeout=self.timeout).text
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
@@ -144,7 +145,7 @@ class ProxyMiner:
             # Start the load operations and mark each future with its URL
             future_proxies = {executor.submit(self._clean_proxy, proxy): proxy for proxy in self.proxies}
             for proxy in as_completed(future_proxies):
-                if proxy.result():
+                if proxy.result() and future_proxies[proxy] not in mail_banned_ips:
                     proxies_clean.add(future_proxies[proxy])
                 continue
         self.proxies = proxies_clean
