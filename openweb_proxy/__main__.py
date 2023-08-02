@@ -27,7 +27,7 @@ def main() -> None:
     if args.checker:
         pm_kwargs["checker"] = args.checker
 
-    pm = ProxyMiner()
+    pm = ProxyMiner(**pm_kwargs)
     if args.bench:
         pm.benchmark_sources()
         sys.exit()
