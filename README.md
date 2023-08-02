@@ -1,4 +1,4 @@
-# openweb-proxy
+# OpenWeb Proxy 🌐
 
 [![Release](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)
 [![Build status](https://img.shields.io/github/actions/workflow/status/ankaboot-source/openweb-proxy/main.yml?branch=main)](https://github.com/ankaboot-source/openweb-proxy/actions/workflows/main.yml?query=branch%3Amain)
@@ -11,43 +11,72 @@ Making the Web Open Again
 - **Github repository**: <https://github.com/ankaboot-source/openweb-proxy/>
 - **Documentation** <https://ankaboot-source.github.io/openweb-proxy/>
 
-## Getting started with your project
+OpenWeb Proxy 🌐 is a powerful tool for downloading and checking proxies from various sources. It efficiently produces a small list of working and efficient proxies from a larger list.
 
-First, create a repository on GitHub with the same name as this project, and then run the following commands:
+## Installation
 
-``` bash
-git init -b main
-git add .
-git commit -m "init commit"
-git remote add origin git@github.com:ankaboot-source/openweb-proxy.git
-git push -u origin main
+To install OpenWeb Proxy, simply use pip:
+
+```sh
+pip install https://github.com/ankaboot-source/openweb-proxy
 ```
 
-Finally, install the environment and the pre-commit hooks with 
+## Usage
 
-```bash
-make install
+For usage instructions and available options, run the following command:
+
+```
+python -m openweb-proxy --help
 ```
 
-You are now ready to start development on your project! The CI/CD
-pipeline will be triggered when you open a pull request, merge to main,
-or when you create a new release.
+## Examples
 
-To finalize the set-up for publishing to PyPi or Artifactory, see
+Here are some examples of how to use OpenWeb proxy:
+
+1. Download and check proxies from the web:
+```sh
+python -m openweb-proxy --web
+```
+
+2. Benchmark sources for proxies:
+
+```sh
+python -m openweb-proxy --bench
+```
+
+3. Load proxies from a file and verify them:
+
+```sh
+python -m openweb-proxy /path/to/proxies.txt
+```
+
+
+## Contributing
+
+Contributions to OpenWeb Proxy are welcome! If you'd like to contribute, please follow these guidelines:
+
+1. Fork the repository and create a new branch and clone it locally.
+2. Make sure you have `poetry` and `cookiecutter` installed.
+3. Run `make install` to setup the environment and the pre-commit hooks.
+4. Make your changes and test them thoroughly.
+5. Submit a pull request with a clear description of your changes.
+
+## License
+
+OpenWeb Proxy is released under the AGPL-3.0 license. See the [LICENSE](/LICENSE) file for more details.
+
+## Acknowledgements
+
+OpenWeb Proxy uses proxies from various sources. You can find the list of sources in the [config.py](/openweb_proxy/config.py) file.
+
+**Disclaimer:** OpenWeb Proxy comes with no warranty. The user is responsible for the usage and legitimacy of the proxies obtained using this software.
+
+## ToDo:
+Finalizing the set-up for publishing to PyPi or Artifactory, see
 [here](https://fpgmaas.github.io/cookiecutter-poetry/features/publishing/#set-up-for-pypi).
-For activating the automatic documentation with MkDocs, see
+Activating the automatic documentation with MkDocs, see
 [here](https://fpgmaas.github.io/cookiecutter-poetry/features/mkdocs/#enabling-the-documentation-on-github).
-To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/codecov/).
-
-## Releasing a new version
-
-- Create an API Token on [Pypi](https://pypi.org/).
-- Add the API Token to your projects secrets with the name `PYPI_TOKEN` by visiting 
-[this page](https://github.com/ankaboot-source/openweb-proxy/settings/secrets/actions/new).
-- Create a [new release](https://github.com/ankaboot-source/openweb-proxy/releases/new) on Github. 
-Create a new tag in the form ``*.*.*``.
-
-For more details, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/cicd/#how-to-trigger-a-release).
+Enabling the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/codecov/).
 
 ---
 
