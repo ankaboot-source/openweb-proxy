@@ -6,7 +6,7 @@ import random
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
-from typing import Any, Callable, Dict, List, Set, Union
+from typing import Callable, Dict, List, Set, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -29,7 +29,7 @@ class ProxyMiner:
         self,
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
-        sources: Dict[str, List[Union[str, Callable[[], Any]]]] = config.PROXY_SOURCES,
+        sources: Dict[str, List[Union[str, Callable[[int], Set[str]]]]] = config.PROXY_SOURCES,
         checker: Dict[str, str] = config.CHECK_URL,
     ):
         self.protocol = protocol
@@ -52,9 +52,10 @@ class ProxyMiner:
             ]
         )
 
-    def _get_sslproxies(self) -> None:
+    def _get_sslproxies(self, timeout: int = 0) -> Set[str]:
         """Get HTTPS proxies from sslproxies.org"""
-        r = requests.get("https://www.sslproxies.org/", random_ua_headers(), timeout=self.timeout)
+        timeout = timeout if timeout else self.timeout
+        r = requests.get("https://www.sslproxies.org/", random_ua_headers(), timeout=timeout)
         soup = BeautifulSoup(r.text, "html.parser")
         proxies_table = soup.find("table", class_="table-striped").tbody
         for row in proxies_table.find_all("tr"):
@@ -63,16 +64,19 @@ class ProxyMiner:
             port = proxy[1].string
             self.proxies.add(f"https://{ip}:{port}")
         log.debug(f"🪲 Proxies sslproxies number: {len(self.proxies)}")
+        # Return empty set since we updated proxies via self
+        return set()
 
-    def _get_clarketm(self) -> None:
+    def _get_clarketm(self, timeout: int = 0) -> Set[str]:
         """Get HTTPS proxies from clarketm on github"""
-        r = requests.get(
-            "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt", timeout=self.timeout
-        )
+        timeout = timeout if timeout else self.timeout
+        r = requests.get("https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt", timeout=timeout)
         for proxy_l in r.text.splitlines()[6:-2]:
             if "S" in proxy_l:
                 self.proxies.add("https://%s" % proxy_l.split(" ")[0])
         log.debug(f"🪲 Proxies clarketm number: {len(self.proxies)}")
+        # Return empty set since we updated proxies via self
+        return set()
 
     def _get_proxies(self, url: str) -> None:
         """Get proxies list from github and al"""
@@ -98,7 +102,9 @@ class ProxyMiner:
         """
         for proxy_getter in self.sources[self.protocol]:
             if callable(proxy_getter):
-                proxy_getter()
+                proxies = proxy_getter(self.timeout)
+                if proxies:
+                    self.proxies.update(proxies)
             else:
                 self._get_proxies(proxy_getter)
         log.info(f"Proxies number (raw): {len(self.proxies)}")

@@ -1,4 +1,6 @@
-from typing import Any, Callable, Dict, List, Union
+from typing import Callable, Dict, List, Set, Union
+
+import requests
 
 PROXIES_FILE = "proxies.txt"
 PROXY_FILE = "proxy.txt"
@@ -19,10 +21,30 @@ MAX_WORKERS = 10
 
 BANNED_URL = "https://raw.githubusercontent.com/ankaboot-source/email-open-data/main/mailserver-banned-ips.txt"
 
-PROXY_SOURCES: Dict[str, List[Union[str, Callable[[], Any]]]] = {
+
+def get_geonde_proxies(timeout: int) -> Set[str]:
+    """Downloads proxies from https://geonode.com/free-proxy-list"""
+    proxies, i = set(), 1
+    while True:
+        r = requests.get(
+            f"https://proxylist.geonode.com/api/proxy-list?limit=500&page={i}&sort_by=lastChecked&sort_type=desc",
+            timeout=timeout,
+        )
+        data = r.json()["data"]
+        if not data:
+            break
+        for element in data:
+            ip, port = element["ip"], element["port"]
+            proxies.add(f"socks5://{ip}:{port}")
+        i += 1
+    return proxies
+
+
+PROXY_SOURCES: Dict[str, List[Union[str, Callable[[int], Set[str]]]]] = {
     "https": [
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/https.txt",
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",
+        "https://spys.me/proxy.txt",
     ],
     "socks5": [
         "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt",
@@ -44,5 +66,8 @@ PROXY_SOURCES: Dict[str, List[Union[str, Callable[[], Any]]]] = {
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks5.txt",
         "https://raw.githubusercontent.com/saschazesiger/Free-Proxies/master/proxies/socks5.txt",
         "https://raw.githubusercontent.com/UserR3X/proxy-list/main/socks5.txt",
+        "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all&simplified=true",
+        "https://spys.me/socks.txt",
+        get_geonde_proxies,
     ],
 }
