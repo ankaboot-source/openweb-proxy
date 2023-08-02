@@ -18,6 +18,15 @@ def main() -> None:
 
     proxies_file = args.proxies_file
 
+    pm_kwargs = {}
+
+    if args.protocol:
+        pm_kwargs["protocol"] = args.protocol
+    if args.timeout:
+        pm_kwargs["timeout"] = args.timeout
+    if args.checker:
+        pm_kwargs["checker"] = args.checker
+
     pm = ProxyMiner()
     if args.bench:
         pm.benchmark_sources()

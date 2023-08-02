@@ -22,6 +22,20 @@ def parse_arguments() -> argparse.Namespace:
         help="Benchmark web sources for proxies, this option doesn't write to file",
     )
     parser.add_argument(
+        "--protocol",
+        choices=["https", "socks5"],
+        help="Protocol for the proxies. Choices: 'https' or 'socks5'. Default is 'socks5'.",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        help="Timeout for requests in seconds. Default is 5 seconds.",
+    )
+    parser.add_argument(
+        "--checker",
+        help="URL to check if a proxy is working. Default is 'https://google.com'.",
+    )
+    parser.add_argument(
         "--verbose",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default="INFO",
