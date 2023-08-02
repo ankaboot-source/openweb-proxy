@@ -11,10 +11,11 @@ from .proxy_miner import ProxyMiner
 
 
 def main() -> None:
-    log.remove(0)
-    log.add(sys.stderr, level="INFO")
-
     args = parse_arguments()
+
+    log.remove(0)
+    log.add(sys.stderr, level=args.verbose)
+
     proxies_file = args.proxies_file
 
     pm = ProxyMiner()

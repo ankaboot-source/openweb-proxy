@@ -21,4 +21,10 @@ def parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="Benchmark web sources for proxies, this option doesn't write to file",
     )
+    parser.add_argument(
+        "--verbose",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default="INFO",
+        help="Set the verbosity level. Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.",
+    )
     return parser.parse_args()
