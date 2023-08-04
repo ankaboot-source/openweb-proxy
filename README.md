@@ -74,8 +74,6 @@ OpenWeb Proxy uses proxies from various sources. You can find the list of source
 ## ToDo:
 Finalizing the set-up for publishing to PyPi or Artifactory, see
 [here](https://fpgmaas.github.io/cookiecutter-poetry/features/publishing/#set-up-for-pypi).
-Activating the automatic documentation with MkDocs, see
-[here](https://fpgmaas.github.io/cookiecutter-poetry/features/mkdocs/#enabling-the-documentation-on-github).
 Enabling the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/codecov/).
 
 ---
