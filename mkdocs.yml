@@ -1,14 +1,14 @@
-site_name: openweb-proxy
+site_name: OpenWeb Proxy
 repo_url: https://github.com/ankaboot-source/openweb-proxy
 site_url: https://ankaboot-source.github.io/openweb-proxy
 site_description: Making the Web Open Again
 site_author: Ankaboot
 edit_uri: edit/main/docs/
 repo_name: ankaboot-source/openweb-proxy
-copyright: Maintained by <a href="https://ankaboot-source.com">Florian</a>.
+copyright: Maintained by <a href="https://ankaboot.fr">Ankaboot</a>.
 
 nav:
-  - Home: index.md
+  - Introduction: index.md
   - Modules: modules.md
 plugins:
   - search
