@@ -254,7 +254,7 @@ class ProxyMiner:
         """
         if self.proxies:
             with open(filename, "w") as f:
-                return f.write("\n".join(self.proxies))
+                return f.write("\n".join(self.proxies) + "\n")
         return -1
 
     def random(self) -> Dict[str, str]:
