@@ -1,16 +1,13 @@
-# OpenWeb Proxy 🌐
+# OpenWeb Proxy 🆓🔓🌐
 
 [![Release](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)
 [![License](https://img.shields.io/github/license/ankaboot-source/openweb-proxy)](https://img.shields.io/github/license/ankaboot-source/openweb-proxy)
+[![Make the Web Open Again]([https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy](https://www.scientificamerican.com/article/long-live-the-web/)
 
-Making the Web Open Again
+OpenWeb Proxy 🆓🔓🌐 is a smart tiny tool to generate clean and stealth socks5 proxies. It efficiently picks only fast (timeout), working with other protocols than HTTPs and not banned from tons of proxies public sources.
 
-- **Github repository**: <https://github.com/ankaboot-source/openweb-proxy/>
-- **Documentation** <https://ankaboot-source.github.io/openweb-proxy/>
-
-OpenWeb Proxy 🌐 is a powerful tool to generate clean and stealth socks5 proxies. It efficiently picks only fast (timeout), working with other protocols than HTTPs and not banned from tons of proxies public sources.
-
+Let's #MakeTheWebOpenAgain
 
 ## Usage
 
