@@ -11,15 +11,8 @@ Making the Web Open Again
 - **Github repository**: <https://github.com/ankaboot-source/openweb-proxy/>
 - **Documentation** <https://ankaboot-source.github.io/openweb-proxy/>
 
-OpenWeb Proxy 🌐 is a powerful tool for downloading and checking proxies from various sources. It efficiently produces a small list of working and efficient proxies from a larger list.
+OpenWeb Proxy 🌐 is a powerful tool to generate clean and stealth socks5 proxies. It efficiently picks only fast (timeout), working with other protocols than HTTPs and not banned from tons of proxies public sources.
 
-## Installation
-
-To install OpenWeb Proxy, simply use pip:
-
-```sh
-pip install https://github.com/ankaboot-source/openweb-proxy
-```
 
 ## Usage
 
@@ -50,17 +43,6 @@ python -m openweb-proxy --bench
 python -m openweb-proxy /path/to/proxies.txt
 ```
 
-
-## Contributing
-
-Contributions to OpenWeb Proxy are welcome! If you'd like to contribute, please follow these guidelines:
-
-1. Fork the repository and create a new branch and clone it locally.
-2. Make sure you have `poetry` and `cookiecutter` installed.
-3. Run `make install` to setup the environment and the pre-commit hooks.
-4. Make your changes and test them thoroughly.
-5. Submit a pull request with a clear description of your changes.
-
 ## License
 
 OpenWeb Proxy is released under the AGPL-3.0 license. See the [LICENSE](/LICENSE) file for more details.
@@ -72,10 +54,7 @@ OpenWeb Proxy uses proxies from various sources. You can find the list of source
 **Disclaimer:** OpenWeb Proxy comes with no warranty. The user is responsible for the usage and legitimacy of the proxies obtained using this software.
 
 ## ToDo:
-Finalizing the set-up for publishing to PyPi or Artifactory, see
-[here](https://fpgmaas.github.io/cookiecutter-poetry/features/publishing/#set-up-for-pypi).
-Enabling the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/codecov/).
-
----
-
-Repository initiated with [fpgmaas/cookiecutter-poetry](https://github.com/fpgmaas/cookiecutter-poetry).
+[ ] Set-up publish to PyPi
+[ ] Unit tests
+[ ] Amplify current list of IP proxies to generate more proxies IPs
+[ ] Replace SaaS Proxy detection tool with home-made
