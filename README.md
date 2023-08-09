@@ -1,8 +1,5 @@
 # OpenWeb Proxy 🆓🔓🌐
 
-[![Release](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)](https://img.shields.io/github/v/release/ankaboot-source/openweb-proxy)
-[![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)](https://img.shields.io/github/commit-activity/m/ankaboot-source/openweb-proxy)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
 [![Make the Web Open Again](https://img.shields.io/badge/%23MakeTheWebOpenAgain-indigo)](https://www.scientificamerican.com/article/long-live-the-web/)
 
