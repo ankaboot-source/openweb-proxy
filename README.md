@@ -6,9 +6,7 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
 [![Make the Web Open Again](https://img.shields.io/badge/%23MakeTheWebOpenAgain-indigo)](https://www.scientificamerican.com/article/long-live-the-web/)
 
-OpenWeb Proxy 🆓🔓🌐 is a smart & tiny tool to generate clean and stealth socks5 proxies. It efficiently picks only fast (timeout), working with other protocols than HTTPs and not banned from tons of proxies public sources.
-
-Let's #MakeTheWebOpenAgain
+OpenWeb Proxy 🆓🔓🌐 is a smart & tiny tool to generate clean and stealth socks5 proxies. It efficiently picks only fast (timeout), working with other protocols than HTTPs and not banned from tons of proxies public sources. Let's #MakeTheWebOpenAgain !
 
 ## Usage
 
@@ -50,7 +48,8 @@ OpenWeb Proxy uses proxies from various sources. You can find the list of source
 **Disclaimer:** OpenWeb Proxy comes with no warranty. The user is responsible for the usage and legitimacy of the proxies obtained using this software.
 
 ## ToDo:
-[ ] Set-up publish to PyPi
-[ ] Unit tests
-[ ] Amplify current list of IP proxies to generate more proxies IPs
-[ ] Replace SaaS Proxy detection tool with home-made
+- [ ] Set-up publish to PyPi
+- [ ] Unit tests
+- [ ] Amplify current list of IP proxies to generate more proxies IPs
+- [ ] Replace SaaS Proxy detection tool with home-made
+
