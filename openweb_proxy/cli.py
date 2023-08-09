@@ -4,7 +4,10 @@ from openweb_proxy import config
 
 
 def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Proxy Miner - Mine and verify proxies from the web.")
+    parser = argparse.ArgumentParser(
+        description="OpenWeb Proxy - generate working, fast and stealth proxy list -"
+        + "#MakeTheWebOpenAgain\nCopyright ankaboot.io"
+    )
     parser.add_argument(
         "proxies_file",
         nargs="?",
@@ -14,7 +17,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--web",
         action="store_true",
-        help="Load proxies from the web if the specified file is empty or not provided.",
+        help="Load proxies from the web",
     )
     parser.add_argument(
         "--bench",
@@ -24,7 +27,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--protocol",
         choices=["https", "socks5"],
-        help="Protocol for the proxies. Choices: 'https' or 'socks5'. Default is 'socks5'.",
+        help="""Protocol for the proxies.
+        Choices: 'https' or 'socks5'. Default is 'socks5'.""",
     )
     parser.add_argument(
         "--timeout",
@@ -39,6 +43,7 @@ def parse_arguments() -> argparse.Namespace:
         "--verbose",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default="INFO",
-        help="Set the verbosity level. Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.",
+        help="""Set the verbosity level.
+        Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.""",
     )
     return parser.parse_args()
