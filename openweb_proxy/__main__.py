@@ -26,19 +26,13 @@ def main() -> None:
     if args.timeout:
         pm_kwargs["timeout"] = args.timeout
 
-    checker = {}
-    if args.generic_check:
-        checker = config.checker
+    checker = config.checker
+    if args.http:
+        checker["http"] = args.http
+    if args.generic:
+        checker["generic"] = args.generic
 
-    if args.http_checker:
-        checker["http"] = args.checker
-    if args.generic_checker_server:
-        checker["g-server"] = args.generic_checker_server
-    if args.generic_checker_port:
-        checker["g-port"] = args.generic_checker_port
-
-    if checker:
-        pm_kwargs["checker"] = checker
+    pm_kwargs["checker"] = checker
 
     pm = ProxyMiner(**pm_kwargs)
     if args.bench:

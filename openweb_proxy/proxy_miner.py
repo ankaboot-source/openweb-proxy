@@ -140,12 +140,12 @@ class ProxyMiner:
         socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, proxy_host, proxy_port)
         socket.socket = socks.socksocket
 
-        smtp_server = config.checker["smtp-host"]
-        smtp_port = config.checker["smtp-port"]
+        generic_server, generic_port = config.checker["generic"].split(":")
+        generic_port = int(generic_port)
 
         try:
             client_socket = socket.create_connection(
-                (smtp_server, smtp_port), timeout=5
+                (generic_server, generic_port), timeout=5
             )
             log.info(f"✅ Proxy is OK: {proxy}")
         except OSError as e:

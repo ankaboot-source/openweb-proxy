@@ -38,23 +38,12 @@ def parse_arguments() -> argparse.Namespace:
         help="Timeout for requests in seconds. Default is 5 seconds.",
     )
     parser.add_argument(
-        "--http-checker",
+        "--http",
         help="URL to check if a proxy is working. Default is 'https://google.com'.",
     )
     parser.add_argument(
-        "--generic-check",
-        action="store_true",
-        help="Enable smtp check",
-    )
-    parser.add_argument(
-        "--generic-checker-server",
-        help="""Server to check if a proxy is working.
-        Default is 'smtp.freesmtpservers.com'.""",
-    )
-    parser.add_argument(
-        "--generic-checker-port",
-        help="""port to use with the server. Default is 25.
-        can also be set via SMTP_SERVER env var""",
+        "--generic",
+        help="host:port format server to check if reachable via proxy.",
     )
     parser.add_argument(
         "--verbose",
