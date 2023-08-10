@@ -5,8 +5,9 @@ from openweb_proxy import config
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="OpenWeb Proxy - generate working, fast and stealth proxy list -"
-        + "#MakeTheWebOpenAgain\nCopyright ankaboot.io"
+        description="OpenWeb Proxy - generate working, fast and stealth proxy list - "
+        + "#MakeTheWebOpenAgain\nCopyright ankaboot.io",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
         "proxies_file",
