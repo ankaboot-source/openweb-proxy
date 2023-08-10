@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from openweb_proxy import config
 
@@ -58,7 +59,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--verbose",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
+        default=os.environ.get("LOG_LEVEL", "INFO"),
         help="""Set the verbosity level.
         Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.""",
     )
