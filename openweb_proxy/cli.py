@@ -42,16 +42,16 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--generic-check",
         action="store_true",
-        help="Disable smtp check",
+        help="Enable smtp check",
     )
     parser.add_argument(
         "--generic-checker-server",
-        help="""URL to check if a proxy is working.
+        help="""Server to check if a proxy is working.
         Default is 'smtp.freesmtpservers.com'.""",
     )
     parser.add_argument(
         "--generic-checker-port",
-        help="""URL to check if a proxy is working. Default is 25.
+        help="""port to use with the server. Default is 25.
         can also be set via SMTP_SERVER env var""",
     )
     parser.add_argument(
