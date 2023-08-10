@@ -8,6 +8,7 @@ from loguru import logger as log
 
 from .cli import parse_arguments
 from .proxy_miner import ProxyMiner
+import openweb_proxy.config as config
 
 
 def main() -> None:
@@ -24,8 +25,20 @@ def main() -> None:
         pm_kwargs["protocol"] = args.protocol
     if args.timeout:
         pm_kwargs["timeout"] = args.timeout
-    if args.checker:
-        pm_kwargs["checker"] = args.checker
+
+    checker = {}
+    if args.generic_check:
+        checker = config.checker
+
+    if args.http_checker:
+        checker["http"] = args.checker
+    if args.generic_checker_server:
+        checker["g-server"] = args.generic_checker_server
+    if args.generic_checker_port:
+        checker["g-port"] = args.generic_checker_port
+
+    if checker:
+        pm_kwargs["checker"] = checker
 
     pm = ProxyMiner(**pm_kwargs)
     if args.bench:

@@ -7,8 +7,11 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
 from typing import Callable, Dict, List, Set, Union
+import socket
+
 
 import requests
+import socks
 from bs4 import BeautifulSoup
 from loguru import logger as log
 
@@ -29,7 +32,9 @@ class ProxyMiner:
         self,
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
-        sources: Dict[str, List[Union[str, Callable[[int], Set[str]]]]] = config.PROXY_SOURCES,
+        sources: Dict[
+            str, List[Union[str, Callable[[int], Set[str]]]]
+        ] = config.PROXY_SOURCES,
         checker: Dict[str, str] = config.CHECK_URL,
     ):
         self.protocol = protocol
@@ -40,7 +45,8 @@ class ProxyMiner:
             r"(?:^|\D)(({0}\.{1}\.{1}\.{1}):{2})(?!.)".format(
                 r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 1-255
                 r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 0-255
-                r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}" + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
+                r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
+                + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
             )
         )
         self.proxies: Set[str] = set()
@@ -55,7 +61,9 @@ class ProxyMiner:
     def _get_sslproxies(self, timeout: int = 0) -> Set[str]:
         """Get HTTPS proxies from sslproxies.org"""
         timeout = timeout if timeout else self.timeout
-        r = requests.get("https://www.sslproxies.org/", random_ua_headers(), timeout=timeout)
+        r = requests.get(
+            "https://www.sslproxies.org/", random_ua_headers(), timeout=timeout
+        )
         soup = BeautifulSoup(r.text, "html.parser")
         proxies_table = soup.find("table", class_="table-striped").tbody
         for row in proxies_table.find_all("tr"):
@@ -70,7 +78,10 @@ class ProxyMiner:
     def _get_clarketm(self, timeout: int = 0) -> Set[str]:
         """Get HTTPS proxies from clarketm on github"""
         timeout = timeout if timeout else self.timeout
-        r = requests.get("https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt", timeout=timeout)
+        r = requests.get(
+            "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt",
+            timeout=timeout,
+        )
         for proxy_l in r.text.splitlines()[6:-2]:
             if "S" in proxy_l:
                 self.proxies.add("https://%s" % proxy_l.split(" ")[0])
@@ -82,7 +93,12 @@ class ProxyMiner:
         """Get proxies list from github and al"""
         try:
             r = requests.get(url, timeout=self.timeout)
-            self.proxies.update({f"{self.protocol}://{proxy.group(1)}" for proxy in self.regex.finditer(r.text)})
+            self.proxies.update(
+                {
+                    f"{self.protocol}://{proxy.group(1)}"
+                    for proxy in self.regex.finditer(r.text)
+                }
+            )
             log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
         except requests.exceptions.ReadTimeout:
             log.error(f"❌ Source {url} timed out")
@@ -93,9 +109,11 @@ class ProxyMiner:
         """Get proxies from public sources
 
         Args:
-            protocol (str, optional): default proxy protocol (HTTPS or Socks). Defaults to PROXY_PROTOCOL.
+            protocol (str, optional): Default proxy protocol (HTTPS or Socks).
+                                      Defaults to PROXY_PROTOCOL.
             timeout (int, optional): timeout. Defaults to TIMEOUT.
-            sources (dict, optional): public sources of proxies. Defaults to PROXY_GETTERS.
+            sources (dict, optional): Public sources of proxies.
+                                      Defaults to PROXY_GETTERS.
 
         Returns:
             list[str]: list of URL proxies
@@ -113,8 +131,36 @@ class ProxyMiner:
     def _clean_proxy(self, proxy: str) -> Union[str, bool]:
         """Check if a proxy URL is working"""
         log.debug(f"🪲 Testing proxy: {proxy}")
+
+        proxy_host, proxy_port = proxy.removeprefix(
+            f"{self.protocol}://"
+        ).split(":")
+        proxy_port = int(proxy_port)
+
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+
+        smtp_server = config.checker["smtp-host"]
+        smtp_port = config.checker["smtp-port"]
+
         try:
-            r = requests.get(self.checker["url"], random_ua_headers(), proxies={"https": proxy}, timeout=self.timeout)
+            client_socket = socket.create_connection(
+                (smtp_server, smtp_port), timeout=5
+            )
+            log.info(f"✅ Proxy is OK: {proxy}")
+        except OSError as e:
+            log.debug(f"❌ Proxy connection failed: {proxy} with error {e}")
+            return False
+
+        if "client_socket" in locals():
+            client_socket.close()
+        try:
+            r = requests.get(
+                self.checker["url"],
+                random_ua_headers(),
+                proxies={"https": proxy},
+                timeout=self.timeout,
+            )
         except requests.ConnectTimeout:
             log.debug(f"❌ Proxy timeout: {proxy}")
             return False
@@ -143,20 +189,32 @@ class ProxyMiner:
         return proxy
 
     def clean(self, max_workers: int = config.MAX_CHECK_WORKERS) -> None:
-        mail_banned_ips = requests.get(config.BANNED_URL, timeout=self.timeout).text
+        mail_banned_ips = requests.get(
+            config.BANNED_URL, timeout=self.timeout
+        ).text
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
-            log.info(f"Checking if {len(self.proxies)} proxies given are working")
+            log.info(
+                f"Checking if {len(self.proxies)} proxies given are working"
+            )
             # Start the load operations and mark each future with its URL
-            future_proxies = {executor.submit(self._clean_proxy, proxy): proxy for proxy in self.proxies}
+            future_proxies = {
+                executor.submit(self._clean_proxy, proxy): proxy
+                for proxy in self.proxies
+            }
             for proxy in as_completed(future_proxies):
-                if proxy.result() and future_proxies[proxy] not in mail_banned_ips:
+                if (
+                    proxy.result()
+                    and future_proxies[proxy] not in mail_banned_ips
+                ):
                     proxies_clean.add(future_proxies[proxy])
                 continue
         self.proxies = proxies_clean
 
-    def is_proxy(self, ip: str, check_url: str = config.ISPROXY_URL) -> Union[bool, None]:
+    def is_proxy(
+        self, ip: str, check_url: str = config.ISPROXY_URL
+    ) -> Union[bool, None]:
         log.info(f"i Testing {ip}")
         try:
             r = requests.get(check_url.format(ip=ip), timeout=self.timeout)
@@ -173,25 +231,40 @@ class ProxyMiner:
             return True
         return False
 
-    def verify(self, url: str = config.ISPROXY_URL_BATCH, max_proxy_batch: int = config.MAX_ISPROXY_BATCH) -> bool:
+    def verify(
+        self,
+        url: str = config.ISPROXY_URL_BATCH,
+        max_proxy_batch: int = config.MAX_ISPROXY_BATCH,
+    ) -> bool:
         """Keep only proxies undetected as proxy by the webservice URL
 
         Args:
             url (str, optional): Is Proxy Webservice. Defaults to ISPROXY_URL_BATCH.
-            max_proxy_batch (int, optional): max by batch. Defaults to MAX_ISPROXY_BATCH.
+            max_proxy_batch (int, optional): max by batch.
+                                             Defaults to MAX_ISPROXY_BATCH.
 
         Returns:
             bool: success
         """
-        ips = dict([p.removeprefix(f"{self.protocol}://").split(":") for p in self.proxies])
+        ips = dict(
+            [
+                p.removeprefix(f"{self.protocol}://").split(":")
+                for p in self.proxies
+            ]
+        )
         ips_l = list(ips.keys())
-        chunks = [ips_l[x : x + max_proxy_batch] for x in range(0, len(ips_l), max_proxy_batch)]
+        chunks = [
+            ips_l[x : x + max_proxy_batch]
+            for x in range(0, len(ips_l), max_proxy_batch)
+        ]
         chunk_i = 1
         log.debug(f"Start Batch Testing. Chunks: {len(chunks)}.")
         for chunk in chunks:
             log.debug(f"Batch testing. Chunk: {chunk_i}/{len(chunks)}")
             try:
-                r = requests.post(url, data=str(chunk).replace("'", '"'), timeout=self.timeout)
+                r = requests.post(
+                    url, data=str(chunk).replace("'", '"'), timeout=self.timeout
+                )
             except requests.RequestException as e:
                 log.error(f"Batch testing. Request Error: {e}")
                 return False
@@ -200,10 +273,15 @@ class ProxyMiner:
                 log.error(f"Batch testing. HTTP Error: {r.text}")
                 return False
 
-            log.debug("🪲 Still {} requests in {} seconds".format(r.headers["X-Rl"], r.headers["X-Ttl"]))
+            log.debug(
+                "🪲 Still {} requests in {} seconds".format(
+                    r.headers["X-Rl"], r.headers["X-Ttl"]
+                )
+            )
             if int(r.headers["X-Rl"]) == 0:
                 log.info(
-                    f"Batch testing. Chunk: {chunk_i}/{len(chunks)}. Sleep: {r.headers['X-Ttl']}s before next chunk"
+                    f"Batch testing. Chunk: {chunk_i}/{len(chunks)}. "
+                    + "Sleep: {r.headers['X-Ttl']}s before next chunk"
                 )
                 sleep(int(r.headers["X-Ttl"]) + self.timeout)
 
@@ -219,12 +297,15 @@ class ProxyMiner:
 
         return True
 
-    def load(self, filename: str = config.PROXIES_FILE, web: bool = True) -> List[str]:
+    def load(
+        self, filename: str = config.PROXIES_FILE, web: bool = True
+    ) -> List[str]:
         """Load set of proxies from file or web if file is empty
 
         Args:
             filename (str, optional): filename. Defaults to PROXIES_FILE.
-            web (bool, optional): loads from Web as fallback. Defaults to True (forced if file doesn't exist).
+            web (bool, optional): Loads from Web as fallback.
+                                  Defaults to True (forced if file doesn't exist).
         """
         if web:
             log.warning("Will load from Web")
@@ -240,7 +321,9 @@ class ProxyMiner:
                 self.proxies.update(proxies)
                 return list(self.proxies)
             elif web:
-                log.warning(f"No proxies found in {filename}. Will load from Web")
+                log.warning(
+                    f"No proxies found in {filename}. Will load from Web"
+                )
                 return self.get()
             else:
                 log.warning(f"No proxies found in {filename}")
@@ -276,6 +359,8 @@ class ProxyMiner:
             sources[source] = len(self.proxies)
         for source in sources:
             if sources[source]:
-                log.info(f"👍 Source {source} contains {sources[source]} valid proxies")
+                log.info(
+                    f"👍 Source {source} contains {sources[source]} valid proxies"
+                )
             else:
                 log.info(f"👎 Source {source} has no valid proxies")
