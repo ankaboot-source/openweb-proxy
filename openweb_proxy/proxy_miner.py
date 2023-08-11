@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 import os
 import random
-import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
 from typing import Any, Dict, List, Set, Union
@@ -34,19 +33,14 @@ class ProxyMiner:
         timeout: int = config.TIMEOUT,
         sources: Dict[str, List[Any]] = config.PROXY_SOURCES,
         checker: Dict[str, str] = config.CHECK_URL,
+        regex: str = config.RE_IP_V4,
     ):
         self.protocol = protocol
         self.timeout = timeout
         self.sources = sources
         self.checker = checker
-        self.regex = re.compile(
-            r"(?:^|\D)(({0}\.{1}\.{1}\.{1}):{2})(?!.)".format(
-                r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 1-255
-                r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 0-255
-                r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
-                + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
-            )
-        )
+        self.regex = regex
+
         self.proxies: Set[str] = set()
 
         self.sources["https"].extend(
