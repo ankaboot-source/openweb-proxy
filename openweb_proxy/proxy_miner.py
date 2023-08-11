@@ -5,7 +5,6 @@ import os
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
-from typing import Any, Dict, List, Set, Union
 import socket
 
 
@@ -31,8 +30,8 @@ class ProxyMiner:
         self,
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
-        sources: Dict[str, List[Any]] = config.PROXY_SOURCES,
-        checker: Dict[str, str] = config.CHECK_URL,
+        sources: dict[str, list] = config.PROXY_SOURCES,
+        checker: dict[str, str] = config.CHECK_URL,
         regex: str = config.RE_IP_V4,
         banned_source: str = config.BANNED_URL,
     ):
@@ -57,7 +56,7 @@ class ProxyMiner:
             log.warning(f"{banned_source}: Not a URL or file does not exist")
             self.banned_list = []
 
-        self.proxies: Set[str] = set()
+        self.proxies: set[str] = set()
 
         self.sources["https"].extend(
             [
@@ -66,7 +65,7 @@ class ProxyMiner:
             ]
         )
 
-    def _get_sslproxies(self, timeout: int = 0) -> Set[str]:
+    def _get_sslproxies(self, timeout: int = 0) -> set[str]:
         """Get HTTPS proxies from sslproxies.org"""
         timeout = timeout if timeout else self.timeout
         r = requests.get(
@@ -83,7 +82,7 @@ class ProxyMiner:
         # Return empty set since we updated proxies via self
         return set()
 
-    def _get_clarketm(self, timeout: int = 0) -> Set[str]:
+    def _get_clarketm(self, timeout: int = 0) -> set[str]:
         """Get HTTPS proxies from clarketm on github"""
         timeout = timeout if timeout else self.timeout
         r = requests.get(
@@ -113,7 +112,7 @@ class ProxyMiner:
         except requests.exceptions.ConnectionError:
             log.error(f"❌ Connection to source {url} failed")
 
-    def get(self) -> List[str]:
+    def get(self) -> list[str]:
         """Get proxies from public sources
 
         Args:
@@ -231,20 +230,18 @@ class ProxyMiner:
                 continue
         self.proxies = proxies_clean
 
-    def is_proxy(
-        self, ip: str, check_url: str = config.ISPROXY_URL
-    ) -> Union[bool, None]:
+    def is_proxy(self, ip: str, check_url: str = config.ISPROXY_URL) -> bool:
         log.info(f"i Testing {ip}")
         try:
             r = requests.get(check_url.format(ip=ip), timeout=self.timeout)
         except requests.RequestException:
-            return None
+            return False
 
         resp = r.json()
 
         if resp["status"] != "success":
             log.warning(f"Failed to check: {ip}")
-            return None
+            return False
         if resp["proxy"]:
             log.info(f"Proxy detected: {ip}")
             return True
@@ -318,7 +315,7 @@ class ProxyMiner:
 
     def load(
         self, filename: str = config.PROXIES_FILE, web: bool = True
-    ) -> List[str]:
+    ) -> list[str]:
         """Load set of proxies from file or web if file is empty
 
         Args:
@@ -359,7 +356,7 @@ class ProxyMiner:
                 return f.write("\n".join(self.proxies) + "\n")
         return -1
 
-    def random(self) -> Dict[str, str]:
+    def random(self) -> dict[str, str]:
         return {self.protocol: random.choice(list(self.proxies))}
 
     def refresh(self) -> None:

@@ -1,5 +1,3 @@
-from typing import Any, Dict, List, Set
-
 import requests
 import re
 
@@ -34,7 +32,7 @@ RE_IP_V4 = re.compile(
 BANNED_URL = "https://raw.githubusercontent.com/ankaboot-source/email-open-data/main/mailserver-banned-ips.txt"
 
 
-def get_geonde_proxies(timeout: int) -> Set[str]:
+def get_geonde_proxies(timeout: int) -> set[str]:
     """Downloads proxies from https://geonode.com/free-proxy-list"""
     proxies, i = set(), 1
     while True:
@@ -52,7 +50,7 @@ def get_geonde_proxies(timeout: int) -> Set[str]:
     return proxies
 
 
-PROXY_SOURCES: Dict[str, List[Any]] = {
+PROXY_SOURCES: dict[str, list] = {
     "https": [
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/https.txt",
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",
