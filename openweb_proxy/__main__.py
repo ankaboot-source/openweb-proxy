@@ -6,11 +6,22 @@ import sys
 
 from loguru import logger as log
 
+from openweb_proxy import config
 from .cli import parse_arguments
 from .proxy_miner import ProxyMiner
 
 
 def main() -> None:
+    """
+    Entry point for the proxy miner application.
+
+    This function is the main entry point for the proxy miner application. It
+    reads command-line arguments, initializes the ProxyMiner instance with
+    appropriate configurations, performs benchmarking, loading, verification,
+    and cleaning of proxies, and provides information about the mined proxies.
+
+    :return: None
+    """
     args = parse_arguments()
 
     log.remove(0)
@@ -24,8 +35,16 @@ def main() -> None:
         pm_kwargs["protocol"] = args.protocol
     if args.timeout:
         pm_kwargs["timeout"] = args.timeout
-    if args.checker:
-        pm_kwargs["checker"] = args.checker
+
+    checker = config.CHECK_URLS
+    if args.http:
+        checker["http"] = args.http
+    if args.generic:
+        checker["generic"] = args.generic
+    if args.banned:
+        checker["banned"] = args.banned
+
+    pm_kwargs["checker"] = checker
 
     pm = ProxyMiner(**pm_kwargs)
     if args.bench:

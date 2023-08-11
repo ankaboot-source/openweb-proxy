@@ -1,20 +1,35 @@
 import argparse
+import os
 
 from openweb_proxy import config
 
 
 def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Proxy Miner - Mine and verify proxies from the web.")
+    """
+    Parse command-line arguments for the OpenWeb Proxy application.
+
+    This function sets up and configures the argument parser for the OpenWeb Proxy
+    application. It defines command-line options related to proxy mining, loading,
+    and benchmarking. The parsed arguments are returned as a namespace object.
+
+    :return: argparse.Namespace - A namespace object containing the parsed arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description="""OpenWeb Proxy - generate working, fast and stealth proxy list -
+        #MakeTheWebOpenAgain
+        Copyright ankaboot.io""",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument(
         "proxies_file",
         nargs="?",
         default=config.PROXIES_FILE,
-        help="The file to load/save the proxies. Default is 'proxies.txt'.",
+        help=f"The file to load/save the proxies. Default is '{config.PROXIES_FILE }'.",
     )
     parser.add_argument(
         "--web",
         action="store_true",
-        help="Load proxies from the web if the specified file is empty or not provided.",
+        help="Load proxies from the web",
     )
     parser.add_argument(
         "--bench",
@@ -24,21 +39,35 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--protocol",
         choices=["https", "socks5"],
-        help="Protocol for the proxies. Choices: 'https' or 'socks5'. Default is 'socks5'.",
+        help="""Protocol for the proxies.
+        Choices: 'https' or 'socks5'. Default is 'socks5'.""",
     )
     parser.add_argument(
         "--timeout",
         type=float,
-        help="Timeout for requests in seconds. Default is 5 seconds.",
+        help=f"Timeout for requests in seconds. Default is {config.TIMEOUT} seconds.",
     )
+    HTTP_HOST = config.CHECK_URLS["url"]
     parser.add_argument(
-        "--checker",
-        help="URL to check if a proxy is working. Default is 'https://google.com'.",
+        "--http",
+        help=f"URL to check if a proxy is working. Default is '{HTTP_HOST}'.",
+    )
+    GENERIC_HOST = config.CHECK_URLS["generic"]
+    parser.add_argument(
+        "--generic",
+        help=f"""host:port format server to check if reachable via proxy.
+        Defaults to {GENERIC_HOST}.""",
     )
     parser.add_argument(
         "--verbose",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
-        help="Set the verbosity level. Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.",
+        default=os.environ.get("LOG_LEVEL", "INFO"),
+        help="""Set the verbosity level.
+        Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.
+        This can also be set using the LOG_LEVEL env var.""",
+    )
+    parser.add_argument(
+        "--banned",
+        help="""URL or FILE of exluded addresses""",
     )
     return parser.parse_args()
