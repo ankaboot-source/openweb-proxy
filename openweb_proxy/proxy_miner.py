@@ -26,20 +26,20 @@ class ProxyMiner:
     - verify and keep only working proxies
     """
 
+    re_ip_v4 = config.RE_IP_V4
+
     def __init__(
         self,
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
         sources: dict[str, list] = config.PROXY_SOURCES,
         checker: dict[str, str] = config.CHECK_URL,
-        regex: str = config.RE_IP_V4,
         banned_source: str = config.BANNED_URL,
     ):
         self.protocol = protocol
         self.timeout = timeout
         self.sources = sources
         self.checker = checker
-        self.regex = regex
 
         if os.path.exists(banned_source):
             with open(banned_source, "r") as file:
@@ -103,7 +103,7 @@ class ProxyMiner:
             self.proxies.update(
                 {
                     f"{self.protocol}://{proxy.group(1)}"
-                    for proxy in self.regex.finditer(r.text)
+                    for proxy in self.re_ip_v4.finditer(r.text)
                 }
             )
             log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
