@@ -27,6 +27,7 @@ class ProxyMiner:
 
     re_ip_v4 = config.RE_IP_V4
 
+    # pylint: disable=dangerous-default-value
     def __init__(
         self,
         protocol: str = config.PROXY_PROTOCOL,
