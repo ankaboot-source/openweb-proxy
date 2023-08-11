@@ -15,7 +15,7 @@ def parse_arguments() -> argparse.Namespace:
         "proxies_file",
         nargs="?",
         default=config.PROXIES_FILE,
-        help="The file to load/save the proxies. Default is 'proxies.txt'.",
+        help=f"The file to load/save the proxies. Default is '{config.PROXIES_FILE }'.",
     )
     parser.add_argument(
         "--web",
@@ -36,22 +36,26 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--timeout",
         type=float,
-        help="Timeout for requests in seconds. Default is 5 seconds.",
+        help=f"Timeout for requests in seconds. Default is {config.TIMEOUT} seconds.",
     )
+    HTTP_HOST = config.CHECK_URL["url"]
     parser.add_argument(
         "--http",
-        help="URL to check if a proxy is working. Default is 'https://google.com'.",
+        help=f"URL to check if a proxy is working. Default is '{HTTP_HOST}'.",
     )
+    GENERIC_HOST = config.CHECK_URL["generic"]
     parser.add_argument(
         "--generic",
-        help="host:port format server to check if reachable via proxy.",
+        help=f"""host:port format server to check if reachable via proxy.
+        Defaults to {GENERIC_HOST}.""",
     )
     parser.add_argument(
         "--verbose",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default=os.environ.get("LOG_LEVEL", "INFO"),
         help="""Set the verbosity level.
-        Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.""",
+        Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.
+        This can also be set using the LOG_LEVEL env var.""",
     )
     parser.add_argument(
         "--banned",

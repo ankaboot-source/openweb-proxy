@@ -2,14 +2,12 @@ import requests
 import re
 
 PROXIES_FILE = "proxies.txt"
-PROXY_FILE = "proxy.txt"
 ISPROXY_URL = "http://ip-api.com/json/{ip}?fields=status,proxy"
 ISPROXY_URL_BATCH = "http://ip-api.com/batch?fields=status,proxy,query"
 MAX_ISPROXY_BATCH = 100
 CHECK_URL = {
     "url": "https://google.com",
-    "g-server": "smtp.freesmtpservers.com",
-    "g-port": 25,
+    "generic": "smtp.freesmtpservers.com:25",
 }
 CHECK_MAX = 100
 MAX_CHECK_WORKERS = 20
