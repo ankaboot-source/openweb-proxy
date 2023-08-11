@@ -120,10 +120,7 @@ class ProxyMiner:
         log.info(f"Proxies number (raw): {len(self.proxies)}")
         return list(self.proxies)
 
-    def _clean_proxy(self, proxy: str) -> Union[str, bool]:
-        """Check if a proxy URL is working"""
-        log.debug(f"🪲 Testing proxy: {proxy}")
-
+    def _check_generic(self, proxy) -> str:
         proxy_host, proxy_port = proxy.removeprefix(
             f"{self.protocol}://"
         ).split(":")
@@ -139,13 +136,17 @@ class ProxyMiner:
             client_socket = socket.create_connection(
                 (generic_server, generic_port), timeout=5
             )
-            log.info(f"✅ Proxy is OK: {proxy}")
+            log.debug(f"✅ Proxy is OK (generic): {proxy}")
         except OSError as e:
             log.debug(f"❌ Proxy connection failed: {proxy} with error {e}")
-            return False
+            return ""
 
         if "client_socket" in locals():
             client_socket.close()
+
+        return proxy
+
+    def _check_http(self, proxy) -> str:
         try:
             r = requests.get(
                 self.checker["url"],
@@ -155,29 +156,42 @@ class ProxyMiner:
             )
         except requests.ConnectTimeout:
             log.debug(f"❌ Proxy timeout: {proxy}")
-            return False
+            return ""
         except requests.exceptions.ProxyError as e:
             log.debug(f"❌ Proxy error. Proxy: {proxy}. Error: {e}")
-            return False
+            return ""
         except requests.RequestException as e:
             log.debug(f"❌ Request error. Proxy: {proxy}. Error: {e}")
-            return False
+            return ""
         except UnicodeError as e:
             log.debug(f"❌ Unicode error. Proxy: {proxy}. Error: {e}")
-            return False
+            return ""
 
         if not r.ok:
             log.debug(f"❌ Proxy rejected by website: {proxy}")
-            return False
-
+            return ""
         # needs a website with a specific string that says "this is/isn't a proxy"
         # #if not CHECK_URL['not_proxy'] in r.text:
         #    log.info(f"👎 Proxy detected {proxy}")
-        #    return False
+        #    return ""
 
+        log.debug(f"✅ Proxy is OK (http): {proxy}")
         log.debug(f"🪲 Answer: {r.text}")
-        log.info(f"✅ Proxy is OK: {proxy}")
+        return proxy
 
+    def _clean_proxy(self, proxy: str) -> str:
+        """Check if a proxy URL is working"""
+        log.debug(f"🪲 Testing proxy: {proxy}")
+
+        proxy = self._check_generic(proxy)
+        if not proxy:
+            return False
+
+        proxy = self._check_http(proxy)
+        if not proxy:
+            return False
+
+        log.info(f"✅ Proxy is OK: {proxy}")
         return proxy
 
     def clean(self, max_workers: int = config.MAX_CHECK_WORKERS) -> None:
