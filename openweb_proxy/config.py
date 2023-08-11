@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Set, Union
+from typing import Any, Dict, List, Set
 
 import requests
 
@@ -40,7 +40,7 @@ def get_geonde_proxies(timeout: int) -> Set[str]:
     return proxies
 
 
-PROXY_SOURCES: Dict[str, List[Union[str, Callable[[int], Set[str]]]]] = {
+PROXY_SOURCES: Dict[str, List[Any]] = {
     "https": [
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/https.txt",
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",

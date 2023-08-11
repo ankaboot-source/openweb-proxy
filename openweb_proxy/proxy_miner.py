@@ -6,7 +6,7 @@ import random
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import sleep
-from typing import Callable, Dict, List, Set, Union
+from typing import Any, Dict, List, Set, Union
 import socket
 
 
@@ -32,9 +32,7 @@ class ProxyMiner:
         self,
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
-        sources: Dict[
-            str, List[Union[str, Callable[[int], Set[str]]]]
-        ] = config.PROXY_SOURCES,
+        sources: Dict[str, List[Any]] = config.PROXY_SOURCES,
         checker: Dict[str, str] = config.CHECK_URL,
     ):
         self.protocol = protocol
