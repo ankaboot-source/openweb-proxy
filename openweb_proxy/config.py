@@ -1,16 +1,18 @@
+import re
 from bs4 import BeautifulSoup
 from loguru import logger as log
-from .random_ua_headers import random_ua_headers
 import requests
-import re
+from .random_ua_headers import random_ua_headers
 
 PROXIES_FILE = "proxies.txt"
 ISPROXY_URL = "http://ip-api.com/json/{ip}?fields=status,proxy"
 ISPROXY_URL_BATCH = "http://ip-api.com/batch?fields=status,proxy,query"
 MAX_ISPROXY_BATCH = 100
-CHECK_URL = {
+CHECK_URLS = {
     "url": "https://google.com",
     "generic": "smtp.freesmtpservers.com:25",
+    "banned": "https://raw.githubusercontent.com/ankaboot-source/\
+email-open-data/main/mailserver-banned-ips.txt",
 }
 CHECK_MAX = 100
 MAX_CHECK_WORKERS = 20
@@ -28,9 +30,6 @@ RE_IP_V4 = re.compile(
         + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])",  # 0-65535
     )
 )
-
-
-BANNED_URL = "https://raw.githubusercontent.com/ankaboot-source/email-open-data/main/mailserver-banned-ips.txt"
 
 
 def _get_sslproxies(timeout: int = 0) -> set[str]:
@@ -60,7 +59,7 @@ def _get_clarketm(timeout: int = 0) -> set[str]:
     proxies = set()
     for proxy_l in r.text.splitlines()[6:-2]:
         if "S" in proxy_l:
-            proxies.add("https://%s" % proxy_l.split(" ")[0])
+            proxies.add(f"https://{proxy_l.split()[0]}")
     log.debug(f"🪲 Proxies clarketm number: {len(proxies)}")
     return proxies
 
@@ -71,11 +70,12 @@ def get_geonde_proxies(timeout: int) -> set[str]:
     while True:
         try:
             r = requests.get(
-                f"https://proxylist.geonode.com/api/proxy-list?limit=500&page={i}&sort_by=lastChecked&sort_type=desc",
+                f"https://proxylist.geonode.com/api/proxy-list?limit=500\
+&page={i}&sort_by=lastChecked&sort_type=desc",
                 timeout=timeout,
             )
             data = r.json()["data"]
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             log.info(f"Genode Proxies stopped at page {i} with exception: {e}")
             data = ""
         if not data:
@@ -104,7 +104,8 @@ PROXY_SOURCES: dict[str, list] = {
         "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
         "https://raw.githubusercontent.com/User-R3X/proxy-list/main/online/socks5.txt",
         "https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS5_RAW.txt",
-        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
+        "https://raw.githubusercontent.com/jetkai/proxy-list/main/\
+online-proxies/txt/proxies-socks5.txt",
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies_anonymous/socks5.txt",
         "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5",
         "https://openproxy.space/list/socks5",
@@ -114,8 +115,10 @@ PROXY_SOURCES: dict[str, list] = {
         "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
         "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks5.txt",
         "https://raw.githubusercontent.com/saschazesiger/Free-Proxies/master/proxies/socks5.txt",
-        "https://raw.githubusercontent.com/UserR3X/proxy-list/main/socks5.txt",
-        "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all&simplified=true",
+        "https://raw.githubusercontent.com/UserR3X/proxy-list/main/\
+socks5.txt",
+        "https://api.proxyscrape.com/v2/?request=getproxies&\
+protocol=socks5&timeout=10000&country=all&simplified=true",
         "https://spys.me/socks.txt",
         get_geonde_proxies,
     ],

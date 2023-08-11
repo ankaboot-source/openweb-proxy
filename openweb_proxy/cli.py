@@ -5,6 +5,15 @@ from openweb_proxy import config
 
 
 def parse_arguments() -> argparse.Namespace:
+    """
+    Parse command-line arguments for the OpenWeb Proxy application.
+
+    This function sets up and configures the argument parser for the OpenWeb Proxy
+    application. It defines command-line options related to proxy mining, loading,
+    and benchmarking. The parsed arguments are returned as a namespace object.
+
+    :return: argparse.Namespace - A namespace object containing the parsed arguments.
+    """
     parser = argparse.ArgumentParser(
         description="""OpenWeb Proxy - generate working, fast and stealth proxy list -
         #MakeTheWebOpenAgain
@@ -38,12 +47,12 @@ def parse_arguments() -> argparse.Namespace:
         type=float,
         help=f"Timeout for requests in seconds. Default is {config.TIMEOUT} seconds.",
     )
-    HTTP_HOST = config.CHECK_URL["url"]
+    HTTP_HOST = config.CHECK_URLS["url"]
     parser.add_argument(
         "--http",
         help=f"URL to check if a proxy is working. Default is '{HTTP_HOST}'.",
     )
-    GENERIC_HOST = config.CHECK_URL["generic"]
+    GENERIC_HOST = config.CHECK_URLS["generic"]
     parser.add_argument(
         "--generic",
         help=f"""host:port format server to check if reachable via proxy.

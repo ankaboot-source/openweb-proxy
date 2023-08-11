@@ -32,27 +32,30 @@ class ProxyMiner:
         protocol: str = config.PROXY_PROTOCOL,
         timeout: int = config.TIMEOUT,
         sources: dict[str, list] = config.PROXY_SOURCES,
-        checker: dict[str, str] = config.CHECK_URL,
-        banned_source: str = config.BANNED_URL,
+        checker: dict[str, str] = config.CHECK_URLS,
     ):
         self.protocol = protocol
         self.timeout = timeout
         self.sources = sources
         self.checker = checker
 
-        if os.path.exists(banned_source):
-            with open(banned_source, "r") as file:
+        if os.path.exists(self.checker["banned"]):
+            with open(self.checker["banned"], "r", encoding="utf-8") as file:
                 self.banned_list = file.read().split("\n")
-        elif config.RE_URL.match(banned_source):
+        elif config.RE_URL.match(self.checker["banned"]):
             try:
                 self.banned_list = requests.get(
-                    banned_source, timeout=self.timeout
+                    self.checker["banned"], timeout=self.timeout
                 ).text.split("\n")
-            except Exception as e:
+            except requests.exceptions.RequestException as e:
                 log.warning(f"Unable to get banned list: {e}")
                 self.banned_list = []
+        elif self.checker["banned"]:
+            log.warning(
+                f"{self.checker['banned']}: Not a URL or file does not exist"
+            )
+            self.banned_list = []
         else:
-            log.warning(f"{banned_source}: Not a URL or file does not exist")
             self.banned_list = []
 
         self.proxies: set[str] = set()
@@ -105,14 +108,14 @@ class ProxyMiner:
         socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, proxy_host, proxy_port)
         socket.socket = socks.socksocket
 
-        generic_server, generic_port = config.checker["generic"].split(":")
+        generic_server, generic_port = self.checker["generic"].split(":")
         generic_port = int(generic_port)
 
         try:
             client_socket = socket.create_connection(
                 (generic_server, generic_port), timeout=5
             )
-            log.debug(f"✅ Proxy is OK (generic): {proxy}")
+            log.debug(f"🪲 Proxy is OK (generic): {proxy}")
         except OSError as e:
             log.debug(f"❌ Proxy connection failed: {proxy} with error {e}")
             return ""
@@ -151,7 +154,7 @@ class ProxyMiner:
         #    log.info(f"👎 Proxy detected {proxy}")
         #    return ""
 
-        log.debug(f"✅ Proxy is OK (http): {proxy}")
+        log.debug(f"🪲 Proxy is OK (http): {proxy}")
         log.debug(f"🪲 Answer: {r.text}")
         return proxy
 
@@ -171,6 +174,19 @@ class ProxyMiner:
         return proxy
 
     def clean(self, max_workers: int = config.MAX_CHECK_WORKERS) -> None:
+        """
+        Clean the list of proxies by removing non-working proxies.
+
+        This method filters out non-working proxies from the list of proxies stored
+        in the instance. Proxies are checked for their functionality using concurrent
+        requests to determine if they are operational.
+
+        :param max_workers: The maximum number of concurrent workers.
+            Defaults to the value specified in the configuration.
+        :type max_workers: int, optional
+
+        :return: None
+        """
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
@@ -192,6 +208,7 @@ class ProxyMiner:
         self.proxies = proxies_clean
 
     def is_proxy(self, ip: str, check_url: str = config.ISPROXY_URL) -> bool:
+        "Uses a check url to see if a proxy is detectable as a proxy."
         log.info(f"i Testing {ip}")
         try:
             r = requests.get(check_url.format(ip=ip), timeout=self.timeout)
@@ -251,9 +268,7 @@ class ProxyMiner:
                 return False
 
             log.debug(
-                "🪲 Still {} requests in {} seconds".format(
-                    r.headers["X-Rl"], r.headers["X-Ttl"]
-                )
+                "🪲 Still {r.headers['X-Rl']} requests in {r.headers['X-Ttl']} seconds"
             )
             if int(r.headers["X-Rl"]) == 0:
                 log.info(
@@ -287,24 +302,23 @@ class ProxyMiner:
         if web:
             log.warning("Will load from Web")
             return self.get()
-        elif not os.path.exists(filename):
+        if not os.path.exists(filename):
             log.warning(f"File {filename} not found")
             log.warning("Nothing to do, please add `--web` to pull from web")
             return []
-        with open(filename, "r+") as p:
+        with open(filename, "r+", encoding="utf-8") as p:
             proxies = p.read().splitlines()
             if proxies:
                 log.info(f"✅ {len(proxies)} proxies loaded from {filename}")
                 self.proxies.update(proxies)
                 return list(self.proxies)
-            elif web:
+            if web:
                 log.warning(
                     f"No proxies found in {filename}. Will load from Web"
                 )
                 return self.get()
-            else:
-                log.warning(f"No proxies found in {filename}")
-                return []
+            log.warning(f"No proxies found in {filename}")
+            return []
 
     def save(self, filename: str = config.PROXIES_FILE) -> int:
         """Save list of proxies into file
@@ -313,19 +327,24 @@ class ProxyMiner:
             filename (str, optional): filename. Defaults to PROXIES_FILE.
         """
         if self.proxies:
-            with open(filename, "w") as f:
+            with open(filename, "w", encoding="utf-8") as f:
                 return f.write("\n".join(self.proxies) + "\n")
         return -1
 
     def random(self) -> dict[str, str]:
+        "Returns a random proxy from the list"
         return {self.protocol: random.choice(list(self.proxies))}
 
     def refresh(self) -> None:
+        """Refresh proxies from the source list."""
         self.load()
         self.verify()
         self.clean()
 
     def benchmark_sources(self) -> None:
+        """
+        Benchmarks the sources to determine their quality.
+        """
         sources = {source: 0 for source in self.sources[self.protocol]}
         log.warning("Benchmarking sources, nothing will be written to file")
         for source in sources:
