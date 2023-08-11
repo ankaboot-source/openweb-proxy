@@ -50,7 +50,7 @@ If you are proposing a new feature:
 
 * Explain in detail how it would work.
 * Keep the scope as narrow as possible, to make it easier to implement.
-* Remember that this is a volunteer-driven project, and that contributions
+* Remember that this is a opensource project, and that contributions
   are welcome :)
 
 Get Started!
@@ -69,33 +69,7 @@ development. Please note this documentation assumes you already have
         cd <directory_in_which_repo_should_be_created>
         git clone git@github.com:YOUR_NAME/openweb-proxy.git
 
-
-| 3. Now we need to install the environment. Navigate into the directory
-
-   .. code-block:: bash
-
-       cd openweb-proxy
-
-   If you are using ``pyenv``, select a version to use locally. (See installed versions with ``pyenv versions``)
-
-   .. code-block:: bash
-
-       pyenv local <x.y.z>
-
-   Then, install and activate the environment with:
-
-   .. code-block:: bash
-
-        poetry install
-        poetry shell
-
-| 4. Install pre-commit to run linters/formatters at commit time:
-
-   .. code-block:: bash
-
-        poetry run pre-commit install
-
-| 5. Create a branch for local development:
+| 3. Create a branch for local development:
 
    .. code-block:: bash
 
@@ -103,33 +77,7 @@ development. Please note this documentation assumes you already have
 
    Now you can make your changes locally.
 
-
-| 6. Don't forget to add test cases for your added functionality to the ``tests`` directory.
-
-| 7. When you're done making changes, check that your changes pass the formatting tests.
-
-   .. code-block:: bash
-
-        make check
-
-| 8. Now, validate that all unit tests are passing:
-
-   .. code-block:: bash
-
-        make test
-
-| 9. Before raising a pull request you should also run tox. This will run the
-   tests across different versions of Python:
-
-   .. code-block:: bash
-
-        tox
-
-   This requires you to have multiple versions of python installed. 
-   This step is also triggered in the CI/CD pipeline, so you could also choose to skip this
-   step locally.
-
-| 10. Commit your changes and push your branch to GitHub:
+| 4. Commit your changes and push your branch to GitHub:
 
    .. code-block:: bash
 
@@ -137,7 +85,7 @@ development. Please note this documentation assumes you already have
         git commit -m "Your detailed description of your changes."
         git push origin name-of-your-bugfix-or-feature
 
-| 11. Submit a pull request through the GitHub website.
+| 5. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 ---------------------------
