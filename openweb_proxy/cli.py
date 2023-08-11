@@ -53,4 +53,8 @@ def parse_arguments() -> argparse.Namespace:
         help="""Set the verbosity level.
         Choose from INFO, DEBUG, WARNING, or ERROR. Default is INFO.""",
     )
+    parser.add_argument(
+        "--banned",
+        help="""URL or FILE of exluded addresses""",
+    )
     return parser.parse_args()

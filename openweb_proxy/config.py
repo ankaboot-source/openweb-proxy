@@ -20,6 +20,7 @@ DEFAULT_PROXY = "https://localhost:3128"
 TIMEOUT = 5
 MAX_WORKERS = 10
 
+RE_URL = re.compile(r"^https?://", re.IGNORECASE)
 RE_IP_V4 = re.compile(
     r"(?:^|\D)(({0}\.{1}\.{1}\.{1}):{2})(?!.)".format(
         r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])",  # 1-255

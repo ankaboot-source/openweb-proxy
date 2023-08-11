@@ -25,6 +25,8 @@ def main() -> None:
         pm_kwargs["protocol"] = args.protocol
     if args.timeout:
         pm_kwargs["timeout"] = args.timeout
+    if args.banned:
+        pm_kwargs["banned"] = args.banned
 
     checker = config.checker
     if args.http:

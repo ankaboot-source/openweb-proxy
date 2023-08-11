@@ -34,12 +34,28 @@ class ProxyMiner:
         sources: Dict[str, List[Any]] = config.PROXY_SOURCES,
         checker: Dict[str, str] = config.CHECK_URL,
         regex: str = config.RE_IP_V4,
+        banned_source: str = config.BANNED_URL,
     ):
         self.protocol = protocol
         self.timeout = timeout
         self.sources = sources
         self.checker = checker
         self.regex = regex
+
+        if os.path.exists(banned_source):
+            with open(banned_source, "r") as file:
+                self.banned_list = file.read().split("\n")
+        elif config.RE_URL.match(banned_source):
+            try:
+                self.banned_list = requests.get(
+                    banned_source, timeout=self.timeout
+                ).text.split("\n")
+            except Exception as e:
+                log.warning(f"Unable to get banned list: {e}")
+                self.banned_list = []
+        else:
+            log.warning(f"{banned_source}: Not a URL or file does not exist")
+            self.banned_list = []
 
         self.proxies: Set[str] = set()
 
@@ -195,9 +211,6 @@ class ProxyMiner:
         return proxy
 
     def clean(self, max_workers: int = config.MAX_CHECK_WORKERS) -> None:
-        mail_banned_ips = requests.get(
-            config.BANNED_URL, timeout=self.timeout
-        ).text
         # We can use a with statement to ensure threads are cleaned up promptly
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             proxies_clean = set()
@@ -212,7 +225,7 @@ class ProxyMiner:
             for proxy in as_completed(future_proxies):
                 if (
                     proxy.result()
-                    and future_proxies[proxy] not in mail_banned_ips
+                    and future_proxies[proxy] not in self.banned_list
                 ):
                     proxies_clean.add(future_proxies[proxy])
                 continue
