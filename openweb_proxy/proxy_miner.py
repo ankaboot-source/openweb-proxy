@@ -100,7 +100,7 @@ class ProxyMiner:
         log.info(f"Proxies number (raw): {len(self.proxies)}")
         return list(self.proxies)
 
-    def _check_generic(self, proxy) -> str:
+    def _check_generic(self, proxy) -> str | bool:
         proxy_host, proxy_port = proxy.removeprefix(
             f"{self.protocol}://"
         ).split(":")
@@ -119,14 +119,14 @@ class ProxyMiner:
             log.debug(f"🪲 Proxy is OK (generic): {proxy}")
         except OSError as e:
             log.debug(f"❌ Proxy connection failed: {proxy} with error {e}")
-            return ""
+            return False
 
         if "client_socket" in locals():
             client_socket.close()
 
         return proxy
 
-    def _check_http(self, proxy) -> str:
+    def _check_http(self, proxy) -> str | bool:
         try:
             r = requests.get(
                 self.checker["url"],
@@ -136,24 +136,24 @@ class ProxyMiner:
             )
         except requests.ConnectTimeout:
             log.debug(f"❌ Proxy timeout: {proxy}")
-            return ""
+            return False
         except requests.exceptions.ProxyError as e:
             log.debug(f"❌ Proxy error. Proxy: {proxy}. Error: {e}")
-            return ""
+            return False
         except requests.RequestException as e:
             log.debug(f"❌ Request error. Proxy: {proxy}. Error: {e}")
-            return ""
+            return False
         except UnicodeError as e:
             log.debug(f"❌ Unicode error. Proxy: {proxy}. Error: {e}")
-            return ""
+            return False
 
         if not r.ok:
             log.debug(f"❌ Proxy rejected by website: {proxy}")
-            return ""
+            return False
         # needs a website with a specific string that says "this is/isn't a proxy"
         # #if not CHECK_URL['not_proxy'] in r.text:
         #    log.info(f"👎 Proxy detected {proxy}")
-        #    return ""
+        #    return False
 
         log.debug(f"🪲 Proxy is OK (http): {proxy}")
         log.debug(f"🪲 Answer: {r.text}")
