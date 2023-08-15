@@ -7,7 +7,7 @@ name =  "openweb_proxy"
 description = "Make the Web Open Again"
 authors = [{name = "Ankaboot", email = "contact@ankaboot.io"}]
 readme = "README.md"
-license = "Apache-2.0"
+license = "AGPL-3.0"
 homepage = "https://github.com/ankaboot-source/openweb_proxy"
 keywords = []
 classifiers = [
