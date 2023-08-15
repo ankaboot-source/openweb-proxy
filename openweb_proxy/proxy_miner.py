@@ -274,7 +274,7 @@ class ProxyMiner:
             if int(r.headers["X-Rl"]) == 0:
                 log.info(
                     f"Batch testing. Chunk: {chunk_i}/{len(chunks)}. "
-                    + "Sleep: {r.headers['X-Ttl']}s before next chunk"
+                    + f"Sleep: {r.headers['X-Ttl']}s before next chunk"
                 )
                 sleep(int(r.headers["X-Ttl"]) + self.timeout)
 
