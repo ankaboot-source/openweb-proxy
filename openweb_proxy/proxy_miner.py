@@ -74,8 +74,8 @@ class ProxyMiner:
             log.debug(f"🪲 Proxies number from {url}: {len(self.proxies)}")
         except requests.exceptions.ReadTimeout:
             log.error(f"❌ Source {url} timed out")
-        except requests.exceptions.ConnectionError:
-            log.error(f"❌ Connection to source {url} failed")
+        except requests.exceptions.ConnectionError as e:
+            log.error(f"❌ Connection to source {url} failed with error {e}")
 
     def get(self) -> list[str]:
         """Get proxies from public sources
@@ -346,18 +346,26 @@ class ProxyMiner:
         """
         Benchmarks the sources to determine their quality.
         """
-        sources = {source: 0 for source in self.sources[self.protocol]}
+        source_properties = {"total": 0, "clean": 0, "working": 0}
+        sources = {
+            source: source_properties.copy()
+            for source in self.sources[self.protocol]
+        }
         log.warning("Benchmarking sources, nothing will be written to file")
         for source in sources:
             self.sources[self.protocol] = [source]
             self.get()
-            self.verify()
+            sources[source]["total"] = len(self.proxies)
             self.clean()
-            sources[source] = len(self.proxies)
+            sources[source]["clean"] = len(self.proxies)
+            self.verify()
+            sources[source]["working"] = len(self.proxies)
         for source in sources:
-            if sources[source]:
-                log.info(
-                    f"👍 Source {source} contains {sources[source]} valid proxies"
-                )
-            else:
-                log.info(f"👎 Source {source} has no valid proxies")
+            for stage in source_properties:
+                if sources[source][stage]:
+                    log.info(
+                        f"👍 Source {source} contains \
+{sources[source][stage]} {stage} proxies"
+                    )
+                else:
+                    log.info(f"👎 Source {source} has no {stage} proxies")
