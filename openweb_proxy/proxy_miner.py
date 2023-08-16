@@ -114,7 +114,7 @@ class ProxyMiner:
 
         try:
             client_socket = socket.create_connection(
-                (generic_server, generic_port), timeout=5
+                (generic_server, generic_port), timeout=self.timeout
             )
             log.debug(f"🪲 Proxy is OK (generic): {proxy}")
         except OSError as e:
@@ -213,10 +213,10 @@ class ProxyMiner:
         log.info(f"i Testing {ip}")
         try:
             r = requests.get(check_url.format(ip=ip), timeout=self.timeout)
+            resp = r.json()
         except requests.RequestException:
+            log.error(f"Unable to fetch query or parse json from {ip}")
             return False
-
-        resp = r.json()
 
         if resp["status"] != "success":
             log.warning(f"Failed to check: {ip}")
@@ -269,7 +269,7 @@ class ProxyMiner:
                 return False
 
             log.debug(
-                "🪲 Still {r.headers['X-Rl']} requests in {r.headers['X-Ttl']} seconds"
+                f"🪲 Still {r.headers['X-Rl']} requests in {r.headers['X-Ttl']} seconds"
             )
             if int(r.headers["X-Rl"]) == 0:
                 log.info(
@@ -312,7 +312,6 @@ class ProxyMiner:
 
         if web:
             log.warning("Will load from Web")
-            log.warning(f"No proxies found in {filename}. Will load from Web")
             return self.get()
         log.warning(f"No proxies found in {filename}")
         log.warning("Nothing to do, please add `--web` to pull from web")
