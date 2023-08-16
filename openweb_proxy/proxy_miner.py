@@ -300,26 +300,23 @@ class ProxyMiner:
             web (bool, optional): Loads from Web as fallback.
                                   Defaults to True (forced if file doesn't exist).
         """
+        if filename and os.path.exists(filename):
+            with open(filename, "r+", encoding="utf-8") as p:
+                self.proxies.update(p.read().splitlines())
+            if self.proxies:
+                log.info(
+                    f"✅ {len(self.proxies)} proxies loaded from {filename}"
+                )
+            else:
+                log.debug(f"❌ No proxies loaded from {filename}")
+
         if web:
             log.warning("Will load from Web")
+            log.warning(f"No proxies found in {filename}. Will load from Web")
             return self.get()
-        if not os.path.exists(filename):
-            log.warning(f"File {filename} not found")
-            log.warning("Nothing to do, please add `--web` to pull from web")
-            return []
-        with open(filename, "r+", encoding="utf-8") as p:
-            proxies = p.read().splitlines()
-            if proxies:
-                log.info(f"✅ {len(proxies)} proxies loaded from {filename}")
-                self.proxies.update(proxies)
-                return list(self.proxies)
-            if web:
-                log.warning(
-                    f"No proxies found in {filename}. Will load from Web"
-                )
-                return self.get()
-            log.warning(f"No proxies found in {filename}")
-            return []
+        log.warning(f"No proxies found in {filename}")
+        log.warning("Nothing to do, please add `--web` to pull from web")
+        return []
 
     def save(self, filename: str = config.PROXIES_FILE) -> int:
         """Save list of proxies into file
