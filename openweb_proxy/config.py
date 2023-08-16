@@ -19,6 +19,7 @@ MAX_CHECK_WORKERS = 20
 PROXY_PROTOCOL = "socks5"
 DEFAULT_PROXY = "https://localhost:3128"
 TIMEOUT = 5
+SOURCE_TIMEOUT = 20
 MAX_WORKERS = 10
 
 RE_URL = re.compile(r"^https?://", re.IGNORECASE)

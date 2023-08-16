@@ -64,7 +64,7 @@ class ProxyMiner:
     def _get_proxies(self, url: str) -> None:
         """Get proxies list from github and al"""
         try:
-            r = requests.get(url, timeout=self.timeout)
+            r = requests.get(url, timeout=config.SOURCE_TIMEOUT)
             self.proxies.update(
                 {
                     f"{self.protocol}://{proxy.group(1)}"
