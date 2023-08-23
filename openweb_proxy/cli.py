@@ -2,11 +2,7 @@ import argparse
 import os
 
 from openweb_proxy import config
-from .__about__ import (
-    __title__,
-    __description__
-)
-
+from .__about__ import __title__, __description__
 
 
 def parse_arguments() -> argparse.Namespace:
