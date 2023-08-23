@@ -1,3 +1,2 @@
-"""OpenWeb Proxy - Making The Web Open Again."""
-
-__version__ = "0.0.1"
+# Copyright 2023 Ankaboot.
+# SPDX-License-Identifier: 	AGPL-3.0-or-later
