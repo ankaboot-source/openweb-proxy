@@ -2,6 +2,7 @@ import argparse
 import os
 
 from openweb_proxy import config
+from .__about__ import __title__, __description__
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -15,9 +16,7 @@ def parse_arguments() -> argparse.Namespace:
     :return: argparse.Namespace - A namespace object containing the parsed arguments.
     """
     parser = argparse.ArgumentParser(
-        description="""OpenWeb Proxy - generate working, fast and stealth proxy list -
-        #MakeTheWebOpenAgain
-        Copyright ankaboot.io""",
+        description=f"{__title__} - {__description__}",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(

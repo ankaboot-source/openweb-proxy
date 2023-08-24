@@ -31,7 +31,7 @@ dynamic = ["version"]
 homepage = "https://github.com/ankaboot-source/openweb_proxy"
 
 [tool.hatch.version]
-path = "openweb_proxy/__init__.py"
+path = "openweb_proxy/__about__.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -41,6 +41,7 @@ exclude = [
 ]
 
 [tool.hatch.envs.test]
+python="python3"
 dependencies = [
     "pylint>=2.15.10",
     "pytest>=7.2.0",
